@@ -1,37 +1,29 @@
-package com.shilulf.smsalert.smsalert;
+package com.shilu.leapfrog.smsalert;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
+
+import com.shilu.leapfrog.smsalert.R;
 
 import java.util.Locale;
 
 
 public class MainActivity extends ActionBarActivity implements TextToSpeech.OnInitListener{
 
-    private TextToSpeech textToSpeech;
-    private String message = "Welcome!";
+    private static TextToSpeech textToSpeech;
+    private String message = "Welcome to SMS Alert!";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textToSpeech = new TextToSpeech(MainActivity.this,this);
-        Button btn = (Button)findViewById(R.id.button);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                textToSpeech.speak("Hello There!!", TextToSpeech.QUEUE_FLUSH, null);
-
-            }
-        });
     }
 
     @Override
@@ -59,31 +51,18 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
 
     @Override
     public void onInit(int status) {
-        Log.d("MAIN", "INIT"+status);
-        Bundle extras = getIntent().getExtras();
-        if(extras!=null){
-            message = extras.getString("SMSAlert_Message");
-        }
         if(status== TextToSpeech.SUCCESS){
-            textToSpeech.setLanguage(Locale.ENGLISH);
             int result =textToSpeech.setLanguage(Locale.ENGLISH);
             if (result == TextToSpeech.LANG_MISSING_DATA ||
                     result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Toast.makeText(getApplicationContext(),"Language is not available.",Toast.LENGTH_LONG).show();
                 Intent installIntent = new Intent();
                 installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(installIntent);
                 Log.v("MAIN", "Language is not available.");
             } else {
-                Toast.makeText(getApplicationContext(),
-                        "Sucessfull intialization of Text-To-Speech engine ",
-                        Toast.LENGTH_LONG).show();
                 textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null);
             }
-        }
-        if(textToSpeech.isSpeaking()){
-            Toast.makeText(getApplicationContext(),
-                    "true",
-                    Toast.LENGTH_LONG).show();
         }
     }
 
@@ -92,7 +71,6 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         if (textToSpeech != null) {
             textToSpeech.stop();
             textToSpeech.shutdown();
-            Log.d("TAG", "textToSpeech Destroyed");
         }
         super.onDestroy();
     }

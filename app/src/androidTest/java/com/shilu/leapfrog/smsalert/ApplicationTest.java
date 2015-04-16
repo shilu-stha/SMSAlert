@@ -1,4 +1,4 @@
-package com.shilulf.smsalert.smsalert;
+package com.shilu.leapfrog.smsalert;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

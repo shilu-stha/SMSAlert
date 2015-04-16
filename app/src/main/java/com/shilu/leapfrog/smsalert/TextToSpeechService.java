@@ -1,4 +1,4 @@
-package com.shilulf.smsalert.smsalert;
+package com.shilu.leapfrog.smsalert;
 
 import android.app.Service;
 import android.content.Context;
@@ -17,32 +17,19 @@ import java.util.Locale;
 public class TextToSpeechService extends Service implements TextToSpeech.OnInitListener{
     TextToSpeech textToSpeech;
     private Context context;
-
+    String receivedText ;
     @Override
     public void onCreate() {
         super.onCreate();
         this.context = this;
-        Log.d("SERVICE","onCreate");
-        textToSpeech = new TextToSpeech(context,this);
-
-    }
-
-    @Override
-    public void onStart(Intent intent, int startId) {
-        super.onStart(intent, startId);
-        Bundle bundle = intent.getExtras();
-        String msg = bundle.getString("SMSAlert_Message");
-        Log.d("SERVICE", msg);
-        speakUp(msg);
-    }
+         textToSpeech = new TextToSpeech(this,this);
+     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("SERVICE", "OnStartCommand");
         Bundle bundle = intent.getExtras();
-        String msg = bundle.getString("SMSAlert_Message");
-        Log.d("SERVICE", msg);
-
+        receivedText = bundle.getString("SMSAlert_Message");
+        Log.d("SERVICE", receivedText);
         return Service.START_STICKY;
     }
 
@@ -51,15 +38,11 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
         return null;
     }
 
-    private void speakUp(String str){
-        textToSpeech.speak(str, TextToSpeech.QUEUE_FLUSH,null);
-    }
-    @Override
+     @Override
     public void onDestroy() {
         if (textToSpeech != null) {
             textToSpeech.stop();
             textToSpeech.shutdown();
-            Log.d("TAG", "textToSpeech Destroyed");
         }
         super.onDestroy();
     }
@@ -70,20 +53,13 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
             int result =textToSpeech.setLanguage(Locale.ENGLISH);
             if (result == TextToSpeech.LANG_MISSING_DATA ||
                     result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Toast.makeText(getApplicationContext(), "Language is not available.", Toast.LENGTH_LONG).show();
                 Intent installIntent = new Intent();
                 installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(installIntent);
                 Log.v("MAIN", "Language is not available.");
             } else {
-                Toast.makeText(getApplicationContext(),
-                        "Sucessfull intialization of Text-To-Speech engine ",
-                        Toast.LENGTH_LONG).show();
-                textToSpeech.speak("hello there!!", TextToSpeech.QUEUE_FLUSH, null);
-            }
-            if(textToSpeech.isSpeaking()){
-                Toast.makeText(getApplicationContext(),
-                        "true",
-                        Toast.LENGTH_LONG).show();
+                textToSpeech.speak(receivedText, TextToSpeech.QUEUE_FLUSH, null);
             }
         }
     }
