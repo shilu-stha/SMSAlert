@@ -17,7 +17,9 @@ import java.util.Locale;
 public class TextToSpeechService extends Service implements TextToSpeech.OnInitListener{
     TextToSpeech textToSpeech;
     private Context context;
-    String receivedText ;
+    String receivedText = null;
+    boolean ttsReady = false;
+    boolean msgReady = false;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -30,7 +32,11 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
         Bundle bundle = intent.getExtras();
         receivedText = bundle.getString("SMSAlert_Message");
         Log.d("SERVICE", receivedText);
-        return Service.START_STICKY;
+        if(receivedText!=null){
+            msgReady = true;
+        }
+        speakUp();
+        return Service.START_NOT_STICKY;
     }
 
     @Override
@@ -47,8 +53,15 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
         super.onDestroy();
     }
 
+    public void speakUp(){
+        if(msgReady && ttsReady){
+            textToSpeech.speak(receivedText, TextToSpeech.QUEUE_FLUSH, null);
+        }
+    }
+
     @Override
     public void onInit(int status) {
+        Log.d("SERVICE", "onInit called");
         if(status== TextToSpeech.SUCCESS) {
             int result =textToSpeech.setLanguage(Locale.ENGLISH);
             if (result == TextToSpeech.LANG_MISSING_DATA ||
@@ -59,7 +72,7 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
                 startActivity(installIntent);
                 Log.v("MAIN", "Language is not available.");
             } else {
-                textToSpeech.speak(receivedText, TextToSpeech.QUEUE_FLUSH, null);
+                ttsReady = true;
             }
         }
     }

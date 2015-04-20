@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.shilu.leapfrog.smsalert.TextToSpeechService;
 
@@ -20,7 +21,7 @@ public class SMSReceiver extends BroadcastReceiver{
             Bundle bundle = intent.getExtras();
             SmsMessage message[] = null;
             String smsFrom = null;
-            String msgBody = null;
+            String msgBody = " ";
             String fullMessage;
             if(bundle!=null){
                 try{
@@ -29,10 +30,10 @@ public class SMSReceiver extends BroadcastReceiver{
                     for(int i=0; i<message.length; i++){
                         message[i] = SmsMessage.createFromPdu((byte[]) pdusObject[i]);
 //                        smsFrom = message[i].getOriginatingAddress();
-                        msgBody = message[i].getMessageBody();
+                        msgBody = msgBody+ message[i].getMessageBody();
                     }
+                    Log.d("RECEIVER","Message "+msgBody);
                     fullMessage = "SMS Received. \n"+msgBody/*+"\n From "+smsFrom*/;
-
                     Intent intentService = new Intent(context, TextToSpeechService.class);
                     intentService.putExtra("SMSAlert_Message", fullMessage);
                     context.startService(intentService);
