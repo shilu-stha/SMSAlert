@@ -18,6 +18,7 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
     TextToSpeech textToSpeech;
     private Context context;
     String receivedText = null;
+    String sender = null;
     boolean ttsReady = false;
     boolean msgReady = false;
     @Override
@@ -31,7 +32,7 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
     public int onStartCommand(Intent intent, int flags, int startId) {
         Bundle bundle = intent.getExtras();
         receivedText = bundle.getString("SMSAlert_Message");
-        Log.d("SERVICE", receivedText);
+        sender = bundle.getString("SMSAlert_Sender");
         if(receivedText!=null){
             msgReady = true;
         }
@@ -73,6 +74,7 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
                 Log.v("MAIN", "Language is not available.");
             } else {
                 ttsReady = true;
+                speakUp();
             }
         }
     }
