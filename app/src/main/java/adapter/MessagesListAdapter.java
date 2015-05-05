@@ -2,6 +2,7 @@ package adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,12 @@ import android.widget.TextView;
 import com.shilu.leapfrog.smsalert.R;
 
 /**
- * Created by shilushrestha on 4/22/15.
+ * Constant file for all the constant values.
+ *
+ * @author: Shilu Shrestha, shilushrestha@lftechnology.com
+ * @date: 4/22/15
  */
+
 public class MessagesListAdapter extends CursorAdapter {
 
     public MessagesListAdapter(Context context, Cursor c) {
@@ -31,7 +36,8 @@ public class MessagesListAdapter extends CursorAdapter {
 
         String body = cursor.getString(cursor.getColumnIndexOrThrow("message_body"));
         String name = cursor.getString(cursor.getColumnIndexOrThrow("contacts_name"));
-        if(name==null){
+//        Log.d("name",name);
+        if (name.equals(null)||name.equals("")) {
             name = cursor.getString(cursor.getColumnIndexOrThrow("contacts_number"));
         }
 

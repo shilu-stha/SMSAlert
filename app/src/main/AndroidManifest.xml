@@ -2,38 +2,48 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.shilu.leapfrog.smsalert" >
 
-    <uses-feature android:name="android.hardware.telephony"/>
-    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-feature android:name="android.hardware.telephony" />
+
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.SENT_SMS" />
+    <!--<uses-permission android:name="android.permission.WRITE_SMS" />-->
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <receiver android:name="common.SMSReceiver">
+        <receiver android:name="common.SMSReceiver" >
             <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+                <action android:name="android.provider.Telephony.SMS_SENT" />
             </intent-filter>
         </receiver>
 
         <service android:name=".TextToSpeechService" />
 
         <provider
-            android:authorities="com.shilu.leapfrog.smsalert"
-            android:name="data.MessageProvider"/>
+            android:name="data.MessageProvider"
+            android:authorities="com.shilu.leapfrog.smsalert" />
 
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".DetailMessage"
+            android:label="@string/title_activity_detail_message" >
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
+        </activity>
     </application>
 
 </manifest>

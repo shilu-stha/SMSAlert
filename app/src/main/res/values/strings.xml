@@ -4,4 +4,8 @@
     <string name="welcome_text">Welcome To SMS Alert!</string>
     <string name="descriptionText">SMS Alert reads out incoming messages into your cellphone to you without having to open the Messaging app.</string>
     <string name="action_settings">Settings</string>
+    <string name="refresh">Refresh</string>
+    <string name="title_activity_detail_message">DetailMessage</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>
