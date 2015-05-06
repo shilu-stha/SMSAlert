@@ -22,7 +22,6 @@ public class SMSObserver extends ContentObserver {
     public SMSObserver(Handler handler, Context mContext) {
         super(handler);
         this.mContext = mContext;
-
     }
 
     @Override
