@@ -6,30 +6,14 @@
 
     <include
         layout="@layout/app_bar"
-        android:id="@+id/app_bar">
-    </include>
+        android:id="@+id/app_bar"/>
 
-    <!--<TextView-->
-        <!--android:layout_below="@id/app_bar"-->
-        <!--android:id="@+id/receivedText"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:text="@string/hello_world"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content" />-->
-    <!--<TextView-->
-        <!--android:id="@+id/sendText"-->
-        <!--android:text="@string/hello_world"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@+id/receivedText"-->
-        <!--android:layout_alignParentRight="true"-->
-         <!--/>-->
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/message_detail_listview"
         android:layout_below="@+id/app_bar"
-        android:dividerHeight="0dp"/>
+        android:dividerHeight="0dp" />
 
 
 </RelativeLayout>

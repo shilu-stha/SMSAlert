@@ -5,24 +5,26 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.util.Log;
 
 /**
- * Created by shilushrestha on 5/4/15.
+ * Constant file for all the constant values.
+ *
+ * @author: Shilu Shrestha, shilushrestha@lftechnology.com
+ * @date: 5/4/15
  */
 public class ContactLookUp {
 
     Context context;
-    private String displayName="";
-    private String phoneNumber="";
-    private String contactId="";
+    private String displayName = "";
+    private String phoneNumber = "";
+    private String contactId = "";
 
     public ContactLookUp(Context context) {
         this.context = context;
     }
-    
-    public String[] phoneLookUp(String smsFrom){
-        Log.d("LOOKUP","smsfrom "+smsFrom);
+
+    public String[] phoneLookUp(String smsFrom) {
+        phoneNumber = smsFrom;
         ContentResolver contentResolver = context.getContentResolver();
         Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(smsFrom));
         Cursor contactsCursor = contentResolver.query(uri, new String[]{
@@ -41,8 +43,7 @@ public class ContactLookUp {
             }
             contactsCursor.close();
         }
-        Log.d("LOOKUP",displayName+" "+contactId+" "+phoneNumber);
-        String[] value = {displayName,contactId,phoneNumber};
+        String[] value = {displayName, contactId, phoneNumber};
         return value;
     }
 }

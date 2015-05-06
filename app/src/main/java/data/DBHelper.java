@@ -7,7 +7,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import data.MessageContract.MessageEntry;
 
 /**
- * Created by shilushrestha on 4/20/15.
+ * Constant file for all the constant values.
+ *
+ * @author: Shilu Shrestha, shilushrestha@lftechnology.com
+ * @date: 4/20/15
  */
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -23,7 +26,7 @@ public class DBHelper extends SQLiteOpenHelper {
             MessageContract.MessageEntry.CONTACTS_NAME + " TEXT ," +
             MessageContract.MessageEntry.CONTACTS_ID + " INTEGER NOT NULL, " +
             " UNIQUE (" + MessageContract.MessageEntry.CONTACTS_ID + ", " +
-            MessageContract.MessageEntry.CONTACTS_NUMBER + ") ON CONFLICT REPLACE "+
+            MessageContract.MessageEntry.CONTACTS_NUMBER + ") ON CONFLICT REPLACE " +
             " );";
 
     final String SQL_CREATE_MESSAGE_DETAIL = "CREATE TABLE " + MessageDetailContract.MessageDetailEntry.TABLE_NAME + " (" +
@@ -32,12 +35,12 @@ public class DBHelper extends SQLiteOpenHelper {
             MessageDetailContract.MessageDetailEntry.MESSAGE_BODY + " TEXT NOT NULL, " +
             MessageDetailContract.MessageDetailEntry.MESSAGE_TYPE + " TEXT NOT NULL, " +
             MessageDetailContract.MessageDetailEntry.DATE_TIME + " INTEGER NOT NULL, " +
-            " FOREIGN KEY (" + MessageDetailContract.MessageDetailEntry.MESSAGES_TABLE_ID+ ") REFERENCES " +
+            " FOREIGN KEY (" + MessageDetailContract.MessageDetailEntry.MESSAGES_TABLE_ID + ") REFERENCES " +
             MessageContract.MessageEntry.TABLE_NAME + " (" + MessageContract.MessageEntry._ID + ") " +
             " );";
 
-    final String SQL_DROP_MESSAGE_TABLE = "DROP TABLE IF EXISTS "+ MessageEntry.TABLE_NAME;
-    final String SQL_DROP_MESSAGE_DETAIL_TABLE = "DROP TABLE IF EXISTS "+ MessageDetailContract.MessageDetailEntry.TABLE_NAME;
+    final String SQL_DROP_MESSAGE_TABLE = "DROP TABLE IF EXISTS " + MessageEntry.TABLE_NAME;
+    final String SQL_DROP_MESSAGE_DETAIL_TABLE = "DROP TABLE IF EXISTS " + MessageDetailContract.MessageDetailEntry.TABLE_NAME;
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -51,7 +54,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
         db.execSQL(SQL_DROP_MESSAGE_TABLE);
         db.execSQL(SQL_DROP_MESSAGE_DETAIL_TABLE);
         onCreate(db);

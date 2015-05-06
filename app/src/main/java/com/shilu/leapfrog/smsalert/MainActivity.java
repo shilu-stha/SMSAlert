@@ -3,32 +3,28 @@ package com.shilu.leapfrog.smsalert;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.Locale;
 
 import adapter.MessagesListAdapter;
 import common.SMSObserver;
-import data.DBHelper;
 import data.MessageContract;
-import data.MessageDetailContract;
 
 
-public class MainActivity extends ActionBarActivity /*implements TextToSpeech.OnInitListener */{
+public class MainActivity extends ActionBarActivity implements LoaderCallbacks<Cursor>/*,TextToSpeech.OnInitListener*/ {
 
     private static TextToSpeech textToSpeech;
     private String message = "Welcome to SMS Alert!";
@@ -36,10 +32,7 @@ public class MainActivity extends ActionBarActivity /*implements TextToSpeech.On
     private TextView welcomeMessage;
     private TextView descriptionText;
     private Toolbar toolbar;
-    private DBHelper dbHelper;
-    private SQLiteDatabase db;
     private MessagesListAdapter adapter;
-    private Cursor messagesCursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,56 +48,50 @@ public class MainActivity extends ActionBarActivity /*implements TextToSpeech.On
 
 //        textToSpeech = new TextToSpeech(MainActivity.this, this);
 
-        SMSObserver smsObserver = (new SMSObserver(new Handler(),this));
+        SMSObserver smsObserver = (new SMSObserver(new Handler(), this));
         ContentResolver contentResolver = this.getContentResolver();
         contentResolver.registerContentObserver(Uri.parse("content://sms"), true, smsObserver);
 
-        dbHelper = new DBHelper(getApplicationContext());
-        db = dbHelper.getWritableDatabase();
-
-//        Cursor messagesCursor = db.rawQuery("select * from messages", null);
-        messagesCursor = db.query(MessageContract.MessageEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
-
-        Log.d("MAINACTIVITY", "" + messagesCursor.toString());
-
-        if (messagesCursor == null) {
-            messagesListview.setVisibility(View.INVISIBLE);
-        } else {
-            descriptionText.setVisibility(View.INVISIBLE);
-            welcomeMessage.setVisibility(View.INVISIBLE);
-            messagesListview.setVisibility(View.VISIBLE);
-            adapter = new MessagesListAdapter(getApplicationContext(), messagesCursor);
-            messagesListview.setAdapter(adapter);
-        }
+//        DBHelper dbHelper = new DBHelper(getApplicationContext());
+//        SQLiteDatabase db = dbHelper.getWritableDatabase();
+//        deleteDatabase(DBHelper.DATABASE_NAME);
 
         messagesListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-                String messageId = cursor.getString(cursor.getColumnIndex("contacts_id"));
+                String messageId = cursor.getString(cursor.getColumnIndex("contacts_number"));
                 String contactName = cursor.getString(cursor.getColumnIndex("contacts_name"));
-                startActivity(new Intent(getApplicationContext(), DetailMessage.class).putExtra("MessageId", messageId).putExtra("ContactsName",contactName));
-                cursor.close();
+                if(contactName.equals(null)||contactName.equals("")){
+                    contactName = messageId;
+                }
+                startActivity(new Intent(getApplicationContext(), DetailMessage.class).putExtra("MessageId", messageId).putExtra("ContactsName", contactName));
+
             }
         });
 
+        getSupportLoaderManager().initLoader(1, null, this);
     }
 
-    public void speakUp(String message) {
-        textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null);
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getSupportLoaderManager().restartLoader(1, null, this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        db.close();
-//        messagesCursor.close();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -122,16 +109,34 @@ public class MainActivity extends ActionBarActivity /*implements TextToSpeech.On
             return true;
         }
         if (id == R.id.refresh) {
-            Cursor newCursor = db.query(MessageContract.MessageEntry.TABLE_NAME,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
-            adapter.changeCursor(newCursor);
+            getSupportLoaderManager().restartLoader(1, null, this);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri uri = MessageContract.MessageEntry.CONTENT_URI;
+        return new CursorLoader(this, uri, null, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data == null) {
+            messagesListview.setVisibility(View.INVISIBLE);
+        } else {
+            descriptionText.setVisibility(View.INVISIBLE);
+            welcomeMessage.setVisibility(View.INVISIBLE);
+            messagesListview.setVisibility(View.VISIBLE);
+            adapter = new MessagesListAdapter(getApplicationContext(), null);
+            messagesListview.setAdapter(adapter);
+        }
+        adapter.changeCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        adapter.changeCursor(null);
     }
 
 
@@ -154,17 +159,5 @@ public class MainActivity extends ActionBarActivity /*implements TextToSpeech.On
             }
         }
     }*/
-
-    @Override
-    public void onDestroy() {
-        if (textToSpeech != null) {
-            textToSpeech.stop();
-            textToSpeech.shutdown();
-        }
-        super.onDestroy();
-        db.close();
-        messagesCursor.close();
-    }
-
 
 }

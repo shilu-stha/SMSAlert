@@ -12,28 +12,32 @@ import android.widget.Toast;
 import java.util.Locale;
 
 /**
- * Created by shilushrestha on 4/16/15.
+ * Constant file for all the constant values.
+ *
+ * @author: Shilu Shrestha, shilushrestha@lftechnology.com
+ * @date: 4/16/15
  */
-public class TextToSpeechService extends Service implements TextToSpeech.OnInitListener{
+public class TextToSpeechService extends Service implements TextToSpeech.OnInitListener {
     TextToSpeech textToSpeech;
     private Context context;
     String receivedText = null;
     String sender = null;
     boolean ttsReady = false;
     boolean msgReady = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
         this.context = this;
-         textToSpeech = new TextToSpeech(this,this);
-     }
+        textToSpeech = new TextToSpeech(this, this);
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Bundle bundle = intent.getExtras();
         receivedText = bundle.getString("SMSAlert_Message");
         sender = bundle.getString("SMSAlert_Sender");
-        if(receivedText!=null){
+        if (receivedText != null) {
             msgReady = true;
         }
         speakUp();
@@ -45,7 +49,7 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
         return null;
     }
 
-     @Override
+    @Override
     public void onDestroy() {
         if (textToSpeech != null) {
             textToSpeech.stop();
@@ -54,8 +58,8 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
         super.onDestroy();
     }
 
-    public void speakUp(){
-        if(msgReady && ttsReady){
+    public void speakUp() {
+        if (msgReady && ttsReady) {
             textToSpeech.speak(receivedText, TextToSpeech.QUEUE_FLUSH, null);
         }
     }
@@ -63,8 +67,8 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
     @Override
     public void onInit(int status) {
         Log.d("SERVICE", "onInit called");
-        if(status== TextToSpeech.SUCCESS) {
-            int result =textToSpeech.setLanguage(Locale.ENGLISH);
+        if (status == TextToSpeech.SUCCESS) {
+            int result = textToSpeech.setLanguage(Locale.ENGLISH);
             if (result == TextToSpeech.LANG_MISSING_DATA ||
                     result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Toast.makeText(getApplicationContext(), "Language is not available.", Toast.LENGTH_LONG).show();

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.shilu.leapfrog.smsalert" >
+    package="com.shilu.leapfrog.smsalert">
 
     <uses-feature android:name="android.hardware.telephony" />
 
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.SENT_SMS" />
-    <!--<uses-permission android:name="android.permission.WRITE_SMS" />-->
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -16,8 +15,8 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <receiver android:name="common.SMSReceiver" >
+        android:theme="@style/AppTheme">
+        <receiver android:name="common.SMSReceiver">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
                 <action android:name="android.provider.Telephony.SMS_SENT" />
@@ -32,7 +31,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,8 +40,10 @@
         </activity>
         <activity
             android:name=".DetailMessage"
-            android:label="@string/title_activity_detail_message" >
-            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
+            android:label="@string/title_activity_detail_message">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
         </activity>
     </application>
 

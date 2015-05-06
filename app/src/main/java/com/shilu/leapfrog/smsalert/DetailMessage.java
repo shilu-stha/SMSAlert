@@ -2,11 +2,14 @@ package com.shilu.leapfrog.smsalert;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.speech.tts.TextToSpeech;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBarActivity;
+import android.net.Uri;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -14,81 +17,43 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Locale;
 
 import adapter.MessageDetailsListAdapter;
-import adapter.MessagesListAdapter;
-import data.DBHelper;
-import data.MessageContract;
 import data.MessageDetailContract;
 
 
-public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnInitListener{
+public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnInitListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private Toolbar toolbar;
-    private DBHelper dbHelper;
-    private SQLiteDatabase db;
-    private Cursor messageDetail;
     private ListView listview;
     private MessageDetailsListAdapter adapter;
     private TextToSpeech textToSpeech;
+    private String messageId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_message);
 
-        toolbar = (Toolbar)findViewById(R.id.app_bar);
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+
         Bundle bundle = getIntent().getExtras();
-        String messageId = bundle.getString("MessageId");
+        messageId = bundle.getString("MessageId");
         String contactsName = bundle.getString("ContactsName");
 
+        Log.d("DETAILMESSAGE", messageId);
         getSupportActionBar().setTitle(contactsName);
 
         textToSpeech = new TextToSpeech(DetailMessage.this, this);
-
         listview = (ListView) findViewById(R.id.message_detail_listview);
-//        TextView receivedText = (TextView) findViewById(R.id.receivedText);
-//        TextView sentText = (TextView) findViewById(R.id.sendText);
 
-        dbHelper = new DBHelper(getApplicationContext());
-        db = dbHelper.getWritableDatabase();
-
-        messageDetail = db.query(MessageDetailContract.MessageDetailEntry.TABLE_NAME,
-                null,
-                MessageDetailContract.MessageDetailEntry.MESSAGES_TABLE_ID + " =? ",
-                new String[]{messageId},
-                null,
-                null,
-                null);
-        messageDetail.moveToFirst();
-        Log.d("DETAILMESSAGE", messageId);
-
-        if (messageDetail != null) {
-            adapter = new MessageDetailsListAdapter(getApplicationContext(), messageDetail);
-            listview.setAdapter(adapter);
-        }
-
-//        messageDetail.moveToFirst();
-//        while (messageDetail.isAfterLast()==false){
-//
-//            String type = messageDetail.getString(messageDetail.getColumnIndexOrThrow(MessageDetailContract.MessageDetailEntry.MESSAGE_TYPE));
-//            Log.d("DETAILMESSAGE", "" + messageDetail.getString(messageDetail.getColumnIndexOrThrow(MessageDetailContract.MessageDetailEntry.MESSAGE_BODY)));
-//            if(type.equals("SENT")){
-//                sentText.setText(messageDetail.getString(messageDetail.getColumnIndexOrThrow(MessageDetailContract.MessageDetailEntry.MESSAGE_BODY)));
-//            }
-//            else{
-//                receivedText.setText(messageDetail.getString(messageDetail.getColumnIndexOrThrow(MessageDetailContract.MessageDetailEntry.MESSAGE_BODY)));
-//            }
-//            messageDetail.moveToNext();
-//        }
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -96,10 +61,10 @@ public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnI
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 String message = cursor.getString(cursor.getColumnIndex("message_body"));
                 speakUp(message);
-//                cursor.close();
-             }
+            }
         });
 
+        getSupportLoaderManager().initLoader(2, null, this);
     }
 
     public void speakUp(String message) {
@@ -120,8 +85,6 @@ public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnI
         if (textToSpeech != null) {
             textToSpeech.shutdown();
         }
-        db.close();
-        messageDetail.close();
     }
 
     @Override
@@ -138,7 +101,7 @@ public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnI
         if (id == R.id.action_settings) {
             return true;
         }
-        if(id== R.id.home){
+        if (id == R.id.home) {
             NavUtils.navigateUpFromSameTask(this);
         }
 
@@ -158,5 +121,33 @@ public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnI
                 Log.v("MAIN", "Language is not available.");
             }
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        Uri uri = MessageDetailContract.MessageDetailEntry.CONTENT_URI;
+        return new CursorLoader(this,
+                uri,
+                null,
+                MessageDetailContract.MessageDetailEntry.MESSAGES_TABLE_ID + " =? ",
+                new String[]{messageId},
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data != null) {
+            adapter = new MessageDetailsListAdapter(getApplicationContext(), null);
+            listview.setAdapter(adapter);
+        }
+
+        adapter.changeCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        adapter.changeCursor(null);
+
     }
 }

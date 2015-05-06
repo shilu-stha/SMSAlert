@@ -1,8 +1,5 @@
 package common;
 
-import android.app.Activity;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
@@ -10,11 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
-
-import com.shilu.leapfrog.smsalert.MainActivity;
-
-import data.MessageContract;
-import data.MessageDetailContract;
 
 
 /**
@@ -68,30 +60,13 @@ public class SMSObserver extends ContentObserver {
                 } catch (Exception e) {
 
                 } finally {
-                    Log.d("SMSOBSERVER", "phoneNumber "+phoneNumber);
-                    insertMessage(date, content, contactId, displayName, phoneNumber);
+                    Log.d("SMSOBSERVER", "phoneNumber " + phoneNumber);
+                    InsertData.insertMessage(mainActivity, date, "SENT", content, contactId, displayName, phoneNumber);
+//                    insertMessage(date, content, contactId, displayName, phoneNumber);
                 }
             }
-            Log.d("SMSOBSERVER", content);
-            Log.d("SMSOBSERVER", "smsNumber "+smsNumber);
             cur.close();
         }
-    }
-
-    private void insertMessage(Long timeStamp, String msgBody, String contactId, String contactName, String contactNumber) {
-        ContentValues values = new ContentValues();
-        values.put(MessageContract.MessageEntry.DATE_TIME, timeStamp);
-        values.put(MessageContract.MessageEntry.MESSAGE_BODY, msgBody);
-        values.put(MessageContract.MessageEntry.CONTACTS_ID, contactId);
-        values.put(MessageContract.MessageEntry.CONTACTS_NAME, contactName);
-        values.put(MessageContract.MessageEntry.CONTACTS_NUMBER, contactNumber);
-
-        ContentValues detailValues = new ContentValues();
-        detailValues.put(MessageDetailContract.MessageDetailEntry.DATE_TIME, timeStamp);
-        detailValues.put(MessageDetailContract.MessageDetailEntry.MESSAGE_BODY, msgBody);
-        detailValues.put(MessageDetailContract.MessageDetailEntry.MESSAGE_TYPE, "SENT");
-        detailValues.put(MessageDetailContract.MessageDetailEntry.MESSAGES_TABLE_ID, contactId);
-        mainActivity.getContentResolver().insert(MessageDetailContract.MessageDetailEntry.CONTENT_URI, detailValues);
     }
 
 }
