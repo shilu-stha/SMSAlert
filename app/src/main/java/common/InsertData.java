@@ -14,20 +14,31 @@ import data.MessageDetailContract;
  */
 public class InsertData {
 
+    /**
+     *
+     * @param context
+     * @param timeStamp time in milliseconds
+     * @param smsType type: SENT/RECEIVED
+     * @param msgBody
+     * @param contactId
+     * @param contactName
+     * @param contactNumber
+     * insert data into messages and message_details tables
+     */
     static void insertMessage(Context context, Long timeStamp, String smsType, String msgBody, String contactId, String contactName, String contactNumber) {
-        ContentValues values = new ContentValues();
-        values.put(MessageContract.MessageEntry.DATE_TIME, timeStamp);
-        values.put(MessageContract.MessageEntry.MESSAGE_BODY, msgBody);
-        values.put(MessageContract.MessageEntry.CONTACTS_ID, contactId);
-        values.put(MessageContract.MessageEntry.CONTACTS_NAME, contactName);
-        values.put(MessageContract.MessageEntry.CONTACTS_NUMBER, contactNumber);
-        context.getContentResolver().insert(MessageContract.MessageEntry.CONTENT_URI, values);
+        ContentValues mValues = new ContentValues();
+        mValues.put(MessageContract.MessageEntry.DATE_TIME, timeStamp);
+        mValues.put(MessageContract.MessageEntry.MESSAGE_BODY, msgBody);
+        mValues.put(MessageContract.MessageEntry.CONTACTS_ID, contactId);
+        mValues.put(MessageContract.MessageEntry.CONTACTS_NAME, contactName);
+        mValues.put(MessageContract.MessageEntry.CONTACTS_NUMBER, contactNumber);
+        context.getContentResolver().insert(MessageContract.MessageEntry.CONTENT_URI, mValues);
 
-        ContentValues detailValues = new ContentValues();
-        detailValues.put(MessageDetailContract.MessageDetailEntry.DATE_TIME, timeStamp);
-        detailValues.put(MessageDetailContract.MessageDetailEntry.MESSAGE_BODY, msgBody);
-        detailValues.put(MessageDetailContract.MessageDetailEntry.MESSAGE_TYPE, smsType);
-        detailValues.put(MessageDetailContract.MessageDetailEntry.MESSAGES_TABLE_ID, contactNumber);
-        context.getContentResolver().insert(MessageDetailContract.MessageDetailEntry.CONTENT_URI, detailValues);
+        ContentValues mDetailValues = new ContentValues();
+        mDetailValues.put(MessageDetailContract.MessageDetailEntry.DATE_TIME, timeStamp);
+        mDetailValues.put(MessageDetailContract.MessageDetailEntry.MESSAGE_BODY, msgBody);
+        mDetailValues.put(MessageDetailContract.MessageDetailEntry.MESSAGE_TYPE, smsType);
+        mDetailValues.put(MessageDetailContract.MessageDetailEntry.MESSAGES_TABLE_ID, contactNumber);
+        context.getContentResolver().insert(MessageDetailContract.MessageDetailEntry.CONTENT_URI, mDetailValues);
     }
 }

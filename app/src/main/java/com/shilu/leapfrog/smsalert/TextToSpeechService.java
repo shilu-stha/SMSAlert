@@ -18,27 +18,28 @@ import java.util.Locale;
  * @date: 4/16/15
  */
 public class TextToSpeechService extends Service implements TextToSpeech.OnInitListener {
-    TextToSpeech textToSpeech;
-    private Context context;
-    String receivedText = null;
-    String sender = null;
-    boolean ttsReady = false;
-    boolean msgReady = false;
+
+    TextToSpeech mTextToSpeech;
+    private Context mContext;
+    String mReceivedText = null;
+    String mSender = null;
+    boolean mTtsReady = false;
+    boolean mMsgReady = false;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        this.context = this;
-        textToSpeech = new TextToSpeech(this, this);
+        this.mContext = this;
+        mTextToSpeech = new TextToSpeech(this, this);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Bundle bundle = intent.getExtras();
-        receivedText = bundle.getString("SMSAlert_Message");
-        sender = bundle.getString("SMSAlert_Sender");
-        if (receivedText != null) {
-            msgReady = true;
+        Bundle mBundle = intent.getExtras();
+        mReceivedText = mBundle.getString("SMSAlert_Message");
+        mSender = mBundle.getString("SMSAlert_Sender");
+        if (mReceivedText != null) {
+            mMsgReady = true;
         }
         speakUp();
         return Service.START_NOT_STICKY;
@@ -51,33 +52,32 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
 
     @Override
     public void onDestroy() {
-        if (textToSpeech != null) {
-            textToSpeech.stop();
-            textToSpeech.shutdown();
+        if (mTextToSpeech != null) {
+            mTextToSpeech.stop();
+            mTextToSpeech.shutdown();
         }
         super.onDestroy();
     }
 
     public void speakUp() {
-        if (msgReady && ttsReady) {
-            textToSpeech.speak(receivedText, TextToSpeech.QUEUE_FLUSH, null);
+        if (mMsgReady && mTtsReady) {
+            mTextToSpeech.speak(mReceivedText, TextToSpeech.QUEUE_FLUSH, null);
         }
     }
 
     @Override
     public void onInit(int status) {
-        Log.d("SERVICE", "onInit called");
         if (status == TextToSpeech.SUCCESS) {
-            int result = textToSpeech.setLanguage(Locale.ENGLISH);
+            int result = mTextToSpeech.setLanguage(Locale.ENGLISH);
             if (result == TextToSpeech.LANG_MISSING_DATA ||
                     result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Toast.makeText(getApplicationContext(), "Language is not available.", Toast.LENGTH_LONG).show();
-                Intent installIntent = new Intent();
-                installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                startActivity(installIntent);
+                Intent mInstallIntent = new Intent();
+                mInstallIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                startActivity(mInstallIntent);
                 Log.v("MAIN", "Language is not available.");
             } else {
-                ttsReady = true;
+                mTtsReady = true;
                 speakUp();
             }
         }

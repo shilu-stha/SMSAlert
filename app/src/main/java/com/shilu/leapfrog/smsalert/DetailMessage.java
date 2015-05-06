@@ -27,11 +27,12 @@ import data.MessageDetailContract;
 
 public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnInitListener, LoaderManager.LoaderCallbacks<Cursor> {
 
+    private MessageDetailsListAdapter mAdapter;
+    private TextToSpeech mTextToSpeech;
+    private String mMessageId;
+
     private Toolbar toolbar;
     private ListView listview;
-    private MessageDetailsListAdapter adapter;
-    private TextToSpeech textToSpeech;
-    private String messageId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,51 +40,49 @@ public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnI
         setContentView(R.layout.activity_detail_message);
 
         toolbar = (Toolbar) findViewById(R.id.app_bar);
+
+        Bundle mBundle = getIntent().getExtras();
+        mMessageId = mBundle.getString("mMessageId");
+        String mContactName = mBundle.getString("ContactsName");
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle(mContactName);
 
-
-        Bundle bundle = getIntent().getExtras();
-        messageId = bundle.getString("MessageId");
-        String contactsName = bundle.getString("ContactsName");
-
-        Log.d("DETAILMESSAGE", messageId);
-        getSupportActionBar().setTitle(contactsName);
-
-        textToSpeech = new TextToSpeech(DetailMessage.this, this);
+        mTextToSpeech = new TextToSpeech(DetailMessage.this, this);
         listview = (ListView) findViewById(R.id.message_detail_listview);
-
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-                String message = cursor.getString(cursor.getColumnIndex("message_body"));
-                speakUp(message);
+                Cursor mCursor = (Cursor) parent.getItemAtPosition(position);
+                String mMessage = mCursor.getString(mCursor.getColumnIndex("message_body"));
+                speakUp(mMessage);
             }
         });
 
         getSupportLoaderManager().initLoader(2, null, this);
+
     }
 
-    public void speakUp(String message) {
-        textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null);
+    public void speakUp(String mMessage) {
+        mTextToSpeech.speak(mMessage, TextToSpeech.QUEUE_FLUSH, null);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (textToSpeech != null) {
-            textToSpeech.stop();
+        if (mTextToSpeech != null) {
+            mTextToSpeech.stop();
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (textToSpeech != null) {
-            textToSpeech.shutdown();
+        if (mTextToSpeech != null) {
+            mTextToSpeech.shutdown();
         }
     }
 
@@ -111,9 +110,8 @@ public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnI
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
-            int result = textToSpeech.setLanguage(Locale.ENGLISH);
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-
+            int mResult = mTextToSpeech.setLanguage(Locale.ENGLISH);
+            if (mResult == TextToSpeech.LANG_MISSING_DATA || mResult == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Toast.makeText(getApplicationContext(), "Language is not available.", Toast.LENGTH_LONG).show();
                 Intent installIntent = new Intent();
                 installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
@@ -126,28 +124,26 @@ public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnI
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        Uri uri = MessageDetailContract.MessageDetailEntry.CONTENT_URI;
-        return new CursorLoader(this,
-                uri,
-                null,
+        Uri mUri = MessageDetailContract.MessageDetailEntry.CONTENT_URI;
+        return new CursorLoader(this,mUri,null,
                 MessageDetailContract.MessageDetailEntry.MESSAGES_TABLE_ID + " =? ",
-                new String[]{messageId},
+                new String[]{mMessageId},
                 null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null) {
-            adapter = new MessageDetailsListAdapter(getApplicationContext(), null);
-            listview.setAdapter(adapter);
+            mAdapter = new MessageDetailsListAdapter(getApplicationContext(),data,false);
+            listview.setAdapter(mAdapter);
         }
 
-        adapter.changeCursor(data);
+        mAdapter.changeCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        adapter.changeCursor(null);
+        mAdapter.changeCursor(null);
 
     }
 }

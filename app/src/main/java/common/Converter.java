@@ -12,20 +12,30 @@ import java.util.Calendar;
  */
 public class Converter {
 
-    final static String dateFormat = "E d-MMM-yy";
-    final static String timeFormat = "h:mma";
+    final static String mDateFormat = "E d-MMM-yy";
+    final static String mTimeFormat = "h:mma";
 
+    /**
+     *
+     * @param timeMilliSeconds
+     * @return string date formatted according to mDateFormat
+     */
     public static String DateConverter(long timeMilliSeconds) {
-        DateFormat format = new SimpleDateFormat(dateFormat);
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(timeMilliSeconds);
-        return format.format(cal.getTime());
+        DateFormat mFormat = new SimpleDateFormat(mDateFormat);
+        Calendar mCal = Calendar.getInstance();
+        mCal.setTimeInMillis(timeMilliSeconds);
+        return mFormat.format(mCal.getTime());
     }
 
+    /**
+     *
+     * @param timeMilliSeconds
+     * @return string time formatted according to mTimeFormat
+     */
     public static String TimeConverter(long timeMilliSeconds) {
-        DateFormat format = new SimpleDateFormat(timeFormat);
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(timeMilliSeconds);
-        return format.format(cal.getTime());
+        DateFormat mFormat = new SimpleDateFormat(mTimeFormat);
+        Calendar mCal = Calendar.getInstance();
+        mCal.setTimeInMillis(timeMilliSeconds);
+        return mFormat.format(mCal.getTime());
     }
 }

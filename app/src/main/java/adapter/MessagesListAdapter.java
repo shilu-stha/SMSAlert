@@ -30,17 +30,17 @@ public class MessagesListAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView tvBody = (TextView) view.findViewById(R.id.messages_listview_text);
-        TextView tvNumber = (TextView) view.findViewById(R.id.messages_listview_txtnum);
+        TextView txtBody = (TextView) view.findViewById(R.id.messages_listview_text);
+        TextView txtNumber = (TextView) view.findViewById(R.id.messages_listview_txtnum);
 
-        String body = cursor.getString(cursor.getColumnIndexOrThrow("message_body"));
-        String name = cursor.getString(cursor.getColumnIndexOrThrow("contacts_name"));
-//        Log.d("name",name);
-        if (name.equals(null)||name.equals("")) {
-            name = cursor.getString(cursor.getColumnIndexOrThrow("contacts_number"));
+        String mBody = cursor.getString(cursor.getColumnIndexOrThrow("message_body"));
+        String mName = cursor.getString(cursor.getColumnIndexOrThrow("contacts_name"));
+
+        if (mName.equals(null)||mName.equals("")) {
+            mName = cursor.getString(cursor.getColumnIndexOrThrow("contacts_number"));              //if contact name not present show number
         }
 
-        tvBody.setText(body);
-        tvNumber.setText(name);
+        txtBody.setText(mBody);
+        txtNumber.setText(mName);
     }
 }

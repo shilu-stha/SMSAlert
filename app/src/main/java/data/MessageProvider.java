@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
@@ -17,32 +16,25 @@ import android.util.Log;
  */
 
 public class MessageProvider extends ContentProvider {
-    private DBHelper dbHelper;
-    private static final UriMatcher uriMatcher = buildUriMatcher();
-    private static final SQLiteQueryBuilder messageByContactsInfo;
+    private DBHelper mDBHelper;
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     public static final int MESSAGE = 1;
     public static final int MESSAGEDETAIL = 2;
     public static final int ALTERCOLUMN = 11;
 
-    //    public static final int CONTACTS = 2;
     @Override
     public boolean onCreate() {
-        dbHelper = new DBHelper(getContext());
+        mDBHelper = new DBHelper(getContext());
         return true;
-    }
-
-    static {
-        messageByContactsInfo = new SQLiteQueryBuilder();
-
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Cursor cursor = null;
-        switch (uriMatcher.match(uri)) {
+        Cursor mCursor = null;
+        switch (sUriMatcher.match(uri)) {
             case MESSAGE:
-                cursor = dbHelper.getReadableDatabase().query(
+                mCursor = mDBHelper.getReadableDatabase().query(
                         MessageContract.MessageEntry.TABLE_NAME,
                         projection,
                         selection,
@@ -52,8 +44,9 @@ public class MessageProvider extends ContentProvider {
                         sortOrder
                 );
                 break;
+
             case MESSAGEDETAIL:
-                cursor = dbHelper.getReadableDatabase().query(
+                mCursor = mDBHelper.getReadableDatabase().query(
                         MessageDetailContract.MessageDetailEntry.TABLE_NAME,
                         projection,
                         selection,
@@ -63,9 +56,12 @@ public class MessageProvider extends ContentProvider {
                         sortOrder
                 );
                 break;
+
+            default:
+                throw new UnsupportedOperationException("Unknown Exception " + uri);
         }
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
-        return cursor;
+        mCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return mCursor;
 
     }
 
@@ -76,93 +72,97 @@ public class MessageProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        int matcher = uriMatcher.match(uri);
-        Uri returnUri = null;
-        long _id;
-        switch (matcher) {
+        SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
+        int mMatcher = sUriMatcher.match(uri);
+        Uri mReturnUri = null;
+        long mID;
+        switch (mMatcher) {
             case MESSAGE:
-                Log.d("PROVIDER", "MESSAGE");
-                _id = db.insert(MessageContract.MessageEntry.TABLE_NAME, null, values);
-                if (_id > 0) {
-                    returnUri = MessageContract.MessageEntry.buildMessageUri(_id);
+                mID = mDb.insert(MessageContract.MessageEntry.TABLE_NAME, null, values);
+                if (mID > 0) {
+                    mReturnUri = MessageContract.MessageEntry.buildMessageUri(mID);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
                 break;
-            case MESSAGEDETAIL:
-                Log.d("PROVIDER", "MESSAGEDETAIL");
 
-                _id = db.insert(MessageDetailContract.MessageDetailEntry.TABLE_NAME, null, values);
-                if (_id > 0) {
-                    returnUri = MessageDetailContract.MessageDetailEntry.buildMessageDetailsUri(_id);
+            case MESSAGEDETAIL:
+                mID = mDb.insert(MessageDetailContract.MessageDetailEntry.TABLE_NAME, null, values);
+                if (mID > 0) {
+                    mReturnUri = MessageDetailContract.MessageDetailEntry.buildMessageDetailsUri(mID);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
                 break;
+
             default:
                 throw new UnsupportedOperationException("Unknown Exception " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        return returnUri;
+        return mReturnUri;
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        int matcher = uriMatcher.match(uri);
-        int rowsDeleted = 0;
+        SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
+        int mMatcher = sUriMatcher.match(uri);
+        int mRowDeleted = 0;
 
         if (null == selection) {
             selection = "1";
         }
-        switch (matcher) {
+        switch (mMatcher) {
             case MESSAGE:
-                rowsDeleted = db.delete(MessageContract.MessageEntry.TABLE_NAME, selection, selectionArgs);
+                mRowDeleted = mDb.delete(MessageContract.MessageEntry.TABLE_NAME, selection, selectionArgs);
                 break;
+
             case MESSAGEDETAIL:
-                rowsDeleted = db.delete(MessageDetailContract.MessageDetailEntry.TABLE_NAME, selection, selectionArgs);
+                mRowDeleted = mDb.delete(MessageDetailContract.MessageDetailEntry.TABLE_NAME, selection, selectionArgs);
                 break;
+
             default:
                 throw new UnsupportedOperationException("Unknown Exception " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        return rowsDeleted;
+        return mRowDeleted;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        int matcher = uriMatcher.match(uri);
-        int rowsUpdated = 0;
+        SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
+        int mMatcher = sUriMatcher.match(uri);
+        int mRowsUpdated = 0;
 
         if (null == selection) {
             selection = "1";
         }
-        switch (matcher) {
+        switch (mMatcher) {
             case MESSAGE:
-                rowsUpdated = db.update(MessageContract.MessageEntry.TABLE_NAME, values, selection, selectionArgs);
+                mRowsUpdated = mDb.update(MessageContract.MessageEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
+
             case MESSAGEDETAIL:
-                rowsUpdated = db.update(MessageDetailContract.MessageDetailEntry.TABLE_NAME, values, selection, selectionArgs);
+                mRowsUpdated = mDb.update(MessageDetailContract.MessageDetailEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
+
             case ALTERCOLUMN:
-                rowsUpdated = db.update(MessageContract.MessageEntry.TABLE_NAME, values, selection, selectionArgs);
+                mRowsUpdated = mDb.update(MessageContract.MessageEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
+
             default:
                 throw new UnsupportedOperationException("Unknown Exception " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        return rowsUpdated;
+        return mRowsUpdated;
     }
 
     static UriMatcher buildUriMatcher() {
-        final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        final String authority = MessageContract.CONTENT_AUTHORITY;
-        uriMatcher.addURI(authority, MessageContract.PATH_MESSAGE, MESSAGE);
-        uriMatcher.addURI(authority, MessageDetailContract.PATH_MESSAGE_DETAILS, MESSAGEDETAIL);
+        final UriMatcher mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        final String mAuthority = MessageContract.CONTENT_AUTHORITY;
+        mUriMatcher.addURI(mAuthority, MessageContract.PATH_MESSAGE, MESSAGE);
+        mUriMatcher.addURI(mAuthority, MessageDetailContract.PATH_MESSAGE_DETAILS, MESSAGEDETAIL);
 
-        return uriMatcher;
+        return mUriMatcher;
 
     }
 }

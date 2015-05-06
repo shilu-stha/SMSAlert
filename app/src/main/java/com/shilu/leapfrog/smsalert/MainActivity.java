@@ -26,13 +26,14 @@ import data.MessageContract;
 
 public class MainActivity extends ActionBarActivity implements LoaderCallbacks<Cursor>/*,TextToSpeech.OnInitListener*/ {
 
-    private static TextToSpeech textToSpeech;
-    private String message = "Welcome to SMS Alert!";
-    private ListView messagesListview;
+    private static TextToSpeech sTextToSpeech;
+    private String mMessage = "Welcome to SMS Alert!";
+    private MessagesListAdapter mAdapter;
+
+    private ListView listview;
     private TextView welcomeMessage;
     private TextView descriptionText;
     private Toolbar toolbar;
-    private MessagesListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
 
-        messagesListview = (ListView) findViewById(R.id.messagesListview);
+        listview = (ListView) findViewById(R.id.messagesListview);
         welcomeMessage = (TextView) findViewById(R.id.welcomeText);
         descriptionText = (TextView) findViewById(R.id.descriptionText);
 
@@ -52,20 +53,16 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
         ContentResolver contentResolver = this.getContentResolver();
         contentResolver.registerContentObserver(Uri.parse("content://sms"), true, smsObserver);
 
-//        DBHelper dbHelper = new DBHelper(getApplicationContext());
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//        deleteDatabase(DBHelper.DATABASE_NAME);
-
-        messagesListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-                String messageId = cursor.getString(cursor.getColumnIndex("contacts_number"));
-                String contactName = cursor.getString(cursor.getColumnIndex("contacts_name"));
-                if(contactName.equals(null)||contactName.equals("")){
-                    contactName = messageId;
+                Cursor mCursor = (Cursor) parent.getItemAtPosition(position);
+                String mMessageId = mCursor.getString(mCursor.getColumnIndex("contacts_number"));
+                String mContactName = mCursor.getString(mCursor.getColumnIndex("contacts_name"));
+                if(mContactName.equals(null)||mContactName.equals("")){
+                    mContactName = mMessageId;
                 }
-                startActivity(new Intent(getApplicationContext(), DetailMessage.class).putExtra("MessageId", messageId).putExtra("ContactsName", contactName));
+                startActivity(new Intent(getApplicationContext(), DetailMessage.class).putExtra("MessageId", mMessageId).putExtra("ContactsName", mContactName));
 
             }
         });
@@ -87,9 +84,9 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
 
     @Override
     public void onDestroy() {
-        if (textToSpeech != null) {
-            textToSpeech.stop();
-            textToSpeech.shutdown();
+        if (sTextToSpeech != null) {
+            sTextToSpeech.stop();
+            sTextToSpeech.shutdown();
         }
         super.onDestroy();
     }
@@ -123,22 +120,27 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data == null) {
-            messagesListview.setVisibility(View.INVISIBLE);
+            listview.setVisibility(View.INVISIBLE);
         } else {
             descriptionText.setVisibility(View.INVISIBLE);
             welcomeMessage.setVisibility(View.INVISIBLE);
-            messagesListview.setVisibility(View.VISIBLE);
-            adapter = new MessagesListAdapter(getApplicationContext(), null);
-            messagesListview.setAdapter(adapter);
+            listview.setVisibility(View.VISIBLE);
+            mAdapter = new MessagesListAdapter(getApplicationContext(), null);
+            listview.setAdapter(mAdapter);
         }
-        adapter.changeCursor(data);
+        mAdapter.changeCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        adapter.changeCursor(null);
+        mAdapter.changeCursor(null);
     }
 
+
+    /**
+     *
+     * for welcome speech message
+     */
 
    /* @Override
     public void onInit(int status) {

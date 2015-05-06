@@ -17,55 +17,59 @@ import android.util.Log;
  */
 public class SMSObserver extends ContentObserver {
 
-    private Context mainActivity;
+    private Context mContext;
 
-    public SMSObserver(Handler handler, Context mainActivity) {
+    public SMSObserver(Handler handler, Context mContext) {
         super(handler);
-        this.mainActivity = mainActivity;
+        this.mContext = mContext;
 
     }
 
     @Override
     public void onChange(boolean selfChange) {
         super.onChange(selfChange);
-        SharedPreferences pref = mainActivity.getSharedPreferences("Counters", Context.MODE_PRIVATE);
-        long previousId = pref.getLong("PreviousId", 0);
 
-        Uri uriSMSURI = Uri.parse("content://sms/sent");
-        Cursor cur = mainActivity.getContentResolver().query(uriSMSURI, null, null, null, null);
-        cur.moveToNext();
+        SharedPreferences mPref = mContext.getSharedPreferences("Counters", Context.MODE_PRIVATE);
+        long mPreviousId = mPref.getLong("PreviousId", 0);
 
-        /*
-        to stop duplicate sms from being saved into db
-        * */
-        long id = cur.getLong(cur.getColumnIndex("_id"));
+        Uri mSmsUri = Uri.parse("content://sms/sent");
+        Cursor mCur = mContext.getContentResolver().query(mSmsUri, null, null, null, null);
+        mCur.moveToNext();
 
-        if (previousId != id) {
-            pref.edit().putLong("PreviousId", id).commit();
-            String content = cur.getString(cur.getColumnIndex("body"));
-            String smsNumber = cur.getString(cur.getColumnIndex("address"));
-            long date = cur.getLong(cur.getColumnIndex("date"));
-            if (smsNumber == null || smsNumber.length() <= 0) {
-                smsNumber = "Unknown";
+        /**
+         * get _id of the message to stop duplicate messages from being saved
+         */
+        long mId = mCur.getLong(mCur.getColumnIndex("_id"));
+
+        if (mPreviousId != mId) {
+            mPref.edit().putLong("PreviousId", mId).commit();
+
+            String mContent = mCur.getString(mCur.getColumnIndex("body"));
+            String mNumber = mCur.getString(mCur.getColumnIndex("address"));
+            long mDate = mCur.getLong(mCur.getColumnIndex("date"));
+
+            if (mNumber == null || mNumber.length() <= 0) {
+                mNumber = "Unknown";
             } else {
-                String displayName = "";
-                String contactId = "";
-                String phoneNumber = smsNumber;
-                try {
-                    ContactLookUp lookUp = new ContactLookUp(mainActivity);
-                    String[] value = lookUp.phoneLookUp(smsNumber);
-                    displayName = value[0];
-                    contactId = value[1];
-                    phoneNumber = value[2];
-                } catch (Exception e) {
 
+                String mDisplayName = "";
+                String mContactId = "";
+                String mPhoneNumber = mNumber;
+
+                try {
+                    ContactLookUp lookUp = new ContactLookUp(mContext);
+                    String[] value = lookUp.phoneLookUp(mNumber);
+                    mDisplayName = value[0];
+                    mContactId = value[1];
+                    mPhoneNumber = value[2];
+                } catch (Exception e) {
+                        throw new UnsupportedOperationException("UnSupported Operation: "+e.getMessage());
                 } finally {
-                    Log.d("SMSOBSERVER", "phoneNumber " + phoneNumber);
-                    InsertData.insertMessage(mainActivity, date, "SENT", content, contactId, displayName, phoneNumber);
-//                    insertMessage(date, content, contactId, displayName, phoneNumber);
+                    InsertData.insertMessage(mContext, mDate, "SENT", mContent, mContactId, mDisplayName, mPhoneNumber);
+//                    insertMessage(mDate, content, mContactId, mDisplayName, mPhoneNumber);
                 }
             }
-            cur.close();
+            mCur.close();
         }
     }
 
