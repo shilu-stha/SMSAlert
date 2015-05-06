@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import adapter.MessagesListAdapter;
@@ -34,6 +35,7 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
     private TextView welcomeMessage;
     private TextView descriptionText;
     private Toolbar toolbar;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,8 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
         listview = (ListView) findViewById(R.id.messagesListview);
         welcomeMessage = (TextView) findViewById(R.id.welcomeText);
         descriptionText = (TextView) findViewById(R.id.descriptionText);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mProgressBar.setIndeterminate(true);
 
 //        textToSpeech = new TextToSpeech(MainActivity.this, this);
 
@@ -59,7 +63,7 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
                 Cursor mCursor = (Cursor) parent.getItemAtPosition(position);
                 String mMessageId = mCursor.getString(mCursor.getColumnIndex("contacts_number"));
                 String mContactName = mCursor.getString(mCursor.getColumnIndex("contacts_name"));
-                if(mContactName.equals(null)||mContactName.equals("")){
+                if (mContactName.equals(null) || mContactName.equals("")) {
                     mContactName = mMessageId;
                 }
                 startActivity(new Intent(getApplicationContext(), DetailMessage.class).putExtra("MessageId", mMessageId).putExtra("ContactsName", mContactName));
