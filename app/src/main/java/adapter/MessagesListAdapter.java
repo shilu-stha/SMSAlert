@@ -2,6 +2,7 @@ package adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.shilu.leapfrog.smsalert.R;
+
+import data.Contract;
 
 /**
  * Constant file for all the constant values.
@@ -19,8 +22,9 @@ import com.shilu.leapfrog.smsalert.R;
 
 public class MessagesListAdapter extends CursorAdapter {
 
-    public MessagesListAdapter(Context context, Cursor c) {
-        super(context, c);
+
+    public MessagesListAdapter(Context context, Cursor c, boolean autoRequery) {
+        super(context, c, autoRequery);
     }
 
     @Override
@@ -33,11 +37,12 @@ public class MessagesListAdapter extends CursorAdapter {
         TextView txtBody = (TextView) view.findViewById(R.id.messages_listview_text);
         TextView txtNumber = (TextView) view.findViewById(R.id.messages_listview_txtnum);
 
-        String mBody = cursor.getString(cursor.getColumnIndexOrThrow("message_body"));
-        String mName = cursor.getString(cursor.getColumnIndexOrThrow("contacts_name"));
+        String mBody = cursor.getString(cursor.getColumnIndexOrThrow(Contract.MessageEntry.MESSAGE_BODY));
+        String mName = cursor.getString(cursor.getColumnIndexOrThrow(Contract.MessageEntry.CONTACTS_NAME));
 
-        if (mName.equals(null)||mName.equals("")) {
-            mName = cursor.getString(cursor.getColumnIndexOrThrow("contacts_number"));              //if contact name not present show number
+        if (TextUtils.isEmpty(mName)) {
+            //if contact name not present show number
+            mName = cursor.getString(cursor.getColumnIndexOrThrow(Contract.MessageEntry.CONTACTS_NUMBER));
         }
 
         txtBody.setText(mBody);

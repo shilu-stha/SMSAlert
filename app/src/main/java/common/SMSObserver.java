@@ -6,7 +6,7 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
-import android.util.Log;
+import android.provider.BaseColumns;
 
 
 /**
@@ -28,28 +28,24 @@ public class SMSObserver extends ContentObserver {
     public void onChange(boolean selfChange) {
         super.onChange(selfChange);
 
-        SharedPreferences mPref = mContext.getSharedPreferences("Counters", Context.MODE_PRIVATE);
-        long mPreviousId = mPref.getLong("PreviousId", 0);
+        SharedPreferences mPref = mContext.getSharedPreferences(Constants.PREFERENCE, Context.MODE_PRIVATE);
+        long mPreviousId = mPref.getLong(Constants.PREVIOUS_ID, 0);
 
-        Uri mSmsUri = Uri.parse("content://sms/sent");
+        Uri mSmsUri = Uri.parse(Constants.SMS_CONTENT_PROVIDER_URI+"/sent");
         Cursor mCur = mContext.getContentResolver().query(mSmsUri, null, null, null, null);
         mCur.moveToNext();
 
-        /**
-         * get _id of the message to stop duplicate messages from being saved
-         */
-        long mId = mCur.getLong(mCur.getColumnIndex("_id"));
+        // get _id of the message to stop duplicate messages from being saved
+        long mId = mCur.getLong(mCur.getColumnIndex(BaseColumns._ID));
 
         if (mPreviousId != mId) {
-            mPref.edit().putLong("PreviousId", mId).commit();
+            mPref.edit().putLong(Constants.PREVIOUS_ID, mId).commit();
 
             String mContent = mCur.getString(mCur.getColumnIndex("body"));
             String mNumber = mCur.getString(mCur.getColumnIndex("address"));
             long mDate = mCur.getLong(mCur.getColumnIndex("date"));
 
-            if (mNumber == null || mNumber.length() <= 0) {
-                mNumber = "Unknown";
-            } else {
+            if (mNumber != null || mNumber.length() > 0) {
 
                 String mDisplayName = "";
                 String mContactId = "";
@@ -61,11 +57,10 @@ public class SMSObserver extends ContentObserver {
                     mDisplayName = value[0];
                     mContactId = value[1];
                     mPhoneNumber = value[2];
-                } catch (Exception e) {
-                        throw new UnsupportedOperationException("UnSupported Operation: "+e.getMessage());
+                } catch (UnsupportedOperationException e) {
+                        throw new UnsupportedOperationException(e.getMessage());
                 } finally {
-                    InsertData.insertMessage(mContext, mDate, "SENT", mContent, mContactId, mDisplayName, mPhoneNumber);
-//                    insertMessage(mDate, content, mContactId, mDisplayName, mPhoneNumber);
+                    InsertData.insertMessage(mContext, mDate, Constants.SENT, mContent, mContactId, mDisplayName, mPhoneNumber);
                 }
             }
             mCur.close();

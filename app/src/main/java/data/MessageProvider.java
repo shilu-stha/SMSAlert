@@ -6,7 +6,8 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.util.Log;
+
+import common.Constants;
 
 /**
  * Constant file for all the constant values.
@@ -35,7 +36,7 @@ public class MessageProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case MESSAGE:
                 mCursor = mDBHelper.getReadableDatabase().query(
-                        MessageContract.MessageEntry.TABLE_NAME,
+                        Contract.MessageEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -47,7 +48,7 @@ public class MessageProvider extends ContentProvider {
 
             case MESSAGEDETAIL:
                 mCursor = mDBHelper.getReadableDatabase().query(
-                        MessageDetailContract.MessageDetailEntry.TABLE_NAME,
+                        Contract.MessageDetailEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -78,18 +79,18 @@ public class MessageProvider extends ContentProvider {
         long mID;
         switch (mMatcher) {
             case MESSAGE:
-                mID = mDb.insert(MessageContract.MessageEntry.TABLE_NAME, null, values);
+                mID = mDb.insert(Contract.MessageEntry.TABLE_NAME, null, values);
                 if (mID > 0) {
-                    mReturnUri = MessageContract.MessageEntry.buildMessageUri(mID);
+                    mReturnUri = Contract.MessageEntry.buildMessageUri(mID);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
                 break;
 
             case MESSAGEDETAIL:
-                mID = mDb.insert(MessageDetailContract.MessageDetailEntry.TABLE_NAME, null, values);
+                mID = mDb.insert(Contract.MessageDetailEntry.TABLE_NAME, null, values);
                 if (mID > 0) {
-                    mReturnUri = MessageDetailContract.MessageDetailEntry.buildMessageDetailsUri(mID);
+                    mReturnUri = Contract.MessageDetailEntry.buildMessageDetailsUri(mID);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
@@ -113,11 +114,11 @@ public class MessageProvider extends ContentProvider {
         }
         switch (mMatcher) {
             case MESSAGE:
-                mRowDeleted = mDb.delete(MessageContract.MessageEntry.TABLE_NAME, selection, selectionArgs);
+                mRowDeleted = mDb.delete(Contract.MessageEntry.TABLE_NAME, selection, selectionArgs);
                 break;
 
             case MESSAGEDETAIL:
-                mRowDeleted = mDb.delete(MessageDetailContract.MessageDetailEntry.TABLE_NAME, selection, selectionArgs);
+                mRowDeleted = mDb.delete(Contract.MessageDetailEntry.TABLE_NAME, selection, selectionArgs);
                 break;
 
             default:
@@ -138,15 +139,15 @@ public class MessageProvider extends ContentProvider {
         }
         switch (mMatcher) {
             case MESSAGE:
-                mRowsUpdated = mDb.update(MessageContract.MessageEntry.TABLE_NAME, values, selection, selectionArgs);
+                mRowsUpdated = mDb.update(Contract.MessageEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
 
             case MESSAGEDETAIL:
-                mRowsUpdated = mDb.update(MessageDetailContract.MessageDetailEntry.TABLE_NAME, values, selection, selectionArgs);
+                mRowsUpdated = mDb.update(Contract.MessageDetailEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
 
             case ALTERCOLUMN:
-                mRowsUpdated = mDb.update(MessageContract.MessageEntry.TABLE_NAME, values, selection, selectionArgs);
+                mRowsUpdated = mDb.update(Contract.MessageEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
 
             default:
@@ -158,9 +159,9 @@ public class MessageProvider extends ContentProvider {
 
     static UriMatcher buildUriMatcher() {
         final UriMatcher mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        final String mAuthority = MessageContract.CONTENT_AUTHORITY;
-        mUriMatcher.addURI(mAuthority, MessageContract.PATH_MESSAGE, MESSAGE);
-        mUriMatcher.addURI(mAuthority, MessageDetailContract.PATH_MESSAGE_DETAILS, MESSAGEDETAIL);
+        final String mAuthority = Constants.CONTENT_AUTHORITY;
+        mUriMatcher.addURI(mAuthority, Constants.PATH_MESSAGE, MESSAGE);
+        mUriMatcher.addURI(mAuthority, Constants.PATH_MESSAGE_DETAILS, MESSAGEDETAIL);
 
         return mUriMatcher;
 

@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
+import common.Constants;
+
 /**
  * Constant file for all the constant values.
  *
@@ -26,6 +28,8 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
     boolean mTtsReady = false;
     boolean mMsgReady = false;
 
+    private String TAG = TextToSpeechService.class.getSimpleName();
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -36,12 +40,13 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Bundle mBundle = intent.getExtras();
-        mReceivedText = mBundle.getString("SMSAlert_Message");
-        mSender = mBundle.getString("SMSAlert_Sender");
+        mReceivedText = mBundle.getString(Constants.BROADCAST_MESSAGE);
+        mSender = mBundle.getString(Constants.BROADCAST_NUMBER);
         if (mReceivedText != null) {
             mMsgReady = true;
         }
         speakUp();
+
         return Service.START_NOT_STICKY;
     }
 
@@ -59,6 +64,9 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
         super.onDestroy();
     }
 
+    /**
+     *  Method to call TextToSpeech Service to read out the text.
+     */
     public void speakUp() {
         if (mMsgReady && mTtsReady) {
             mTextToSpeech.speak(mReceivedText, TextToSpeech.QUEUE_FLUSH, null);
@@ -69,13 +77,14 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
             int result = mTextToSpeech.setLanguage(Locale.ENGLISH);
+
             if (result == TextToSpeech.LANG_MISSING_DATA ||
                     result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Toast.makeText(getApplicationContext(), "Language is not available.", Toast.LENGTH_LONG).show();
                 Intent mInstallIntent = new Intent();
                 mInstallIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(mInstallIntent);
-                Log.v("MAIN", "Language is not available.");
+                Log.v(TAG, "Language is not available.");
             } else {
                 mTtsReady = true;
                 speakUp();

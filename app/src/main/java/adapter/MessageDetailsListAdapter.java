@@ -12,7 +12,9 @@ import android.widget.TextView;
 
 import com.shilu.leapfrog.smsalert.R;
 
+import common.Constants;
 import common.Converter;
+import data.Contract;
 
 /**
  * Constant file for all the constant values.
@@ -39,9 +41,9 @@ public class MessageDetailsListAdapter extends CursorAdapter {
         TextView txtDate = (TextView) view.findViewById(R.id.message_date);
         TextView txtTime = (TextView) view.findViewById(R.id.message_time);
 
-        String mBody = cursor.getString(cursor.getColumnIndexOrThrow("message_body"));
-        String mType = cursor.getString(cursor.getColumnIndexOrThrow("message_type"));
-        String mDate = cursor.getString(cursor.getColumnIndexOrThrow("date_time"));
+        String mBody = cursor.getString(cursor.getColumnIndexOrThrow(Contract.MessageDetailEntry.MESSAGE_BODY));
+        String mType = cursor.getString(cursor.getColumnIndexOrThrow(Contract.MessageDetailEntry.MESSAGE_TYPE));
+        String mDate = cursor.getString(cursor.getColumnIndexOrThrow(Contract.MessageDetailEntry.DATE_TIME));
 
         txtBody.setText(mBody);
         txtDate.setText(Converter.DateConverter(Long.parseLong(mDate)));
@@ -49,14 +51,16 @@ public class MessageDetailsListAdapter extends CursorAdapter {
         
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(20,20,20,20);
-        if(mType.equals("SENT")){
-            params.gravity = Gravity.RIGHT;                
-            txtBody.setLayoutParams(params);                      // Alignment of the textView set to Right
+
+        if(mType.equals(Constants.SENT)){
+            params.gravity = Gravity.RIGHT;
+            // Alignment of the textView set to Right
+            txtBody.setLayoutParams(params);
             txtBody.setBackgroundResource(R.drawable.chat_bubble_right);
-        }
-        else{
+        } else{
             params.gravity = Gravity.LEFT;
-            txtBody.setLayoutParams(params);                      // Alignment of the textView set to Left
+            // Alignment of the textView set to Left
+            txtBody.setLayoutParams(params);
             txtBody.setBackgroundResource(R.drawable.chat_bubble_left);
         }
     }

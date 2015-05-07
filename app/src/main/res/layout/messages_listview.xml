@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
-        android:textColor="#000000"
+        android:textColor="@color/textColor"
         android:id="@+id/messages_listview_txtnum" />
 
     <TextView
@@ -17,6 +17,6 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
-        android:textColor="#000000"
+        android:textColor="@color/textColor"
         android:id="@+id/messages_listview_text" />
 </LinearLayout>

@@ -21,11 +21,11 @@ public class ContactLookUp {
     }
 
     /**
+     * Uses PhoneLookup Content Provider to filter out the details on the basis of number sent in params.
      *
-     * @param smsFrom
-     * @return String[] containing displayname, contactId, phoneNumber of the contacts as saved from ContactProvider
-     * on the basis of number sent in params.
-     * Uses PhoneLookup Content Provider to filter out the details
+     * @param : Sms sender's contact number
+     * @return : String[] containing displayname, contactId, phoneNumber of the contacts as saved from ContactProvider
+     *
      */
     public String[] phoneLookUp(String smsFrom) {
         String mDisplayName = "";

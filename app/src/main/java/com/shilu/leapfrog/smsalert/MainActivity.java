@@ -1,7 +1,9 @@
 package com.shilu.leapfrog.smsalert;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +14,8 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,16 +23,25 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Locale;
 
 import adapter.MessagesListAdapter;
+import common.Constants;
 import common.SMSObserver;
-import data.MessageContract;
+import data.Contract;
 
+/**
+ * Constant file for all the constant values.
+ *
+ * @author: Shilu Shrestha, shilushrestha@lftechnology.com
+ * @date: 4/15/15
+ */
+public class MainActivity extends ActionBarActivity implements LoaderCallbacks<Cursor>, TextToSpeech.OnInitListener {
 
-public class MainActivity extends ActionBarActivity implements LoaderCallbacks<Cursor>/*,TextToSpeech.OnInitListener*/ {
-
+    private String TAG = MainActivity.class.getSimpleName();
     private static TextToSpeech sTextToSpeech;
-    private String mMessage = "Welcome to SMS Alert!";
     private MessagesListAdapter mAdapter;
 
     private ListView listview;
@@ -49,24 +62,32 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
         welcomeMessage = (TextView) findViewById(R.id.welcomeText);
         descriptionText = (TextView) findViewById(R.id.descriptionText);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mProgressBar.setIndeterminate(true);
 
-//        textToSpeech = new TextToSpeech(MainActivity.this, this);
+        mProgressBar.setIndeterminate(true);
+        mProgressBar.setVisibility(View.VISIBLE);
+
+        sTextToSpeech = new TextToSpeech(MainActivity.this, this);
 
         SMSObserver smsObserver = (new SMSObserver(new Handler(), this));
         ContentResolver contentResolver = this.getContentResolver();
-        contentResolver.registerContentObserver(Uri.parse("content://sms"), true, smsObserver);
+        contentResolver.registerContentObserver(Uri.parse(Constants.SMS_CONTENT_PROVIDER_URI), true, smsObserver);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mProgressBar.setVisibility(View.VISIBLE);
+
                 Cursor mCursor = (Cursor) parent.getItemAtPosition(position);
-                String mMessageId = mCursor.getString(mCursor.getColumnIndex("contacts_number"));
-                String mContactName = mCursor.getString(mCursor.getColumnIndex("contacts_name"));
-                if (mContactName.equals(null) || mContactName.equals("")) {
+                String mMessageId = mCursor.getString(mCursor.getColumnIndex(Contract.MessageEntry.CONTACTS_NUMBER));
+                String mContactName = mCursor.getString(mCursor.getColumnIndex(Contract.MessageEntry.CONTACTS_NAME));
+
+                if (TextUtils.isEmpty(mContactName)) {
                     mContactName = mMessageId;
                 }
-                startActivity(new Intent(getApplicationContext(), DetailMessage.class).putExtra("MessageId", mMessageId).putExtra("ContactsName", mContactName));
+                Intent mIntent = new Intent(getApplicationContext(),DetailMessage.class);
+                mIntent.putExtra(Constants.MESSAGE_ID, mMessageId);
+                mIntent.putExtra(Constants.CONTACT_NAME, mContactName);
+                startActivity(mIntent);
 
             }
         });
@@ -78,6 +99,7 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
     @Override
     protected void onResume() {
         super.onResume();
+        mProgressBar.setVisibility(View.VISIBLE);
         getSupportLoaderManager().restartLoader(1, null, this);
     }
 
@@ -98,6 +120,7 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
         return true;
     }
 
@@ -109,15 +132,19 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
         if (id == R.id.action_settings) {
             return true;
         }
+
         if (id == R.id.refresh) {
+            mProgressBar.setVisibility(View.VISIBLE);
             getSupportLoaderManager().restartLoader(1, null, this);
         }
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri uri = MessageContract.MessageEntry.CONTENT_URI;
+        Uri uri = Contract.MessageEntry.CONTENT_URI;
+
         return new CursorLoader(this, uri, null, null, null, null);
     }
 
@@ -129,10 +156,12 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
             descriptionText.setVisibility(View.INVISIBLE);
             welcomeMessage.setVisibility(View.INVISIBLE);
             listview.setVisibility(View.VISIBLE);
-            mAdapter = new MessagesListAdapter(getApplicationContext(), null);
+            mAdapter = new MessagesListAdapter(getApplicationContext(), data, false);
             listview.setAdapter(mAdapter);
         }
         mAdapter.changeCursor(data);
+
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -140,18 +169,11 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
         mAdapter.changeCursor(null);
     }
 
-
-    /**
-     *
-     * for welcome speech message
-     */
-
-   /* @Override
+    @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
 
-            int result = textToSpeech.setLanguage(Locale.ENGLISH);
-            Log.v("MAIN", "onInit");
+            int result = sTextToSpeech.setLanguage(Locale.ENGLISH);
 
             if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
 
@@ -159,11 +181,22 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
                 Intent installIntent = new Intent();
                 installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(installIntent);
-                Log.v("MAIN", "Language is not available.");
+                Log.v(TAG, "Language is not available.");
             } else {
-                textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null);
+                SharedPreferences mPref = getSharedPreferences(Constants.PREFERENCE, Context.MODE_PRIVATE);
+                boolean firstIn = mPref.getBoolean(Constants.FIRST_IN, true);
+
+//              for welcome speech message
+                if (firstIn) {
+                    listview.setVisibility(View.INVISIBLE);
+                    descriptionText.setVisibility(View.VISIBLE);
+                    welcomeMessage.setVisibility(View.VISIBLE);
+
+                    sTextToSpeech.speak(Constants.WELCOME_TEXT, TextToSpeech.QUEUE_FLUSH, null);
+                    mPref.edit().putBoolean(Constants.FIRST_IN, false).commit();
+                }
             }
         }
-    }*/
+    }
 
 }

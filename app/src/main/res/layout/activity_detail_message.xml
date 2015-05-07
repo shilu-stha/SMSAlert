@@ -6,14 +6,22 @@
 
     <include
         layout="@layout/app_bar"
-        android:id="@+id/app_bar"/>
+        android:id="@+id/app_bar" />
 
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/message_detail_listview"
         android:layout_below="@+id/app_bar"
-        android:dividerHeight="0dp" />
+        android:dividerHeight="0dp"
+        android:listSelector="@null"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar2"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>
