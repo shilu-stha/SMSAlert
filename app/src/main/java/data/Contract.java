@@ -4,7 +4,7 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import common.Constants;
+import components.Constants;
 
 
 /**

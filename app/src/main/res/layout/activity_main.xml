@@ -16,7 +16,7 @@
         android:textSize="30sp"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
-        android:id="@+id/welcomeText" />
+        android:id="@+id/text_welcome" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -24,7 +24,7 @@
         android:padding="10dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/descriptionText"
-        android:id="@+id/descriptionText"
+        android:id="@+id/text_description"
         android:textSize="20sp"
         android:gravity="center"
         android:layout_centerVertical="true" />
@@ -32,13 +32,13 @@
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/messagesListview"
+        android:id="@+id/messages_listview"
         android:layout_below="@+id/app_bar" />
 
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
+        android:id="@+id/progress_bar"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 

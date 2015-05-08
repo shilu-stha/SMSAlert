@@ -1,4 +1,4 @@
-package common;
+package components;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -25,7 +25,7 @@ public class InsertData {
      * @param contactNumber
      *
      */
-    static void insertMessage(Context context, Long timeStamp, String smsType, String msgBody, String contactId, String contactName, String contactNumber) {
+    public static void insertMessage(Context context, Long timeStamp, String smsType, String msgBody, String contactId, String contactName, String contactNumber) {
         ContentValues mValues = new ContentValues();
         mValues.put(Contract.MessageEntry.DATE_TIME, timeStamp);
         mValues.put(Contract.MessageEntry.MESSAGE_BODY, msgBody);

@@ -1,4 +1,4 @@
-package common;
+package services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,6 +7,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.BaseColumns;
+
+import components.Constants;
+import components.ContactLookUp;
+import components.InsertData;
 
 
 /**
@@ -31,7 +35,7 @@ public class SMSObserver extends ContentObserver {
         SharedPreferences mPref = mContext.getSharedPreferences(Constants.PREFERENCE, Context.MODE_PRIVATE);
         long mPreviousId = mPref.getLong(Constants.PREVIOUS_ID, 0);
 
-        Uri mSmsUri = Uri.parse(Constants.SMS_CONTENT_PROVIDER_URI+"/sent");
+        Uri mSmsUri = Uri.parse(Constants.SMS_CONTENT_PROVIDER_URI_SENT);
         Cursor mCur = mContext.getContentResolver().query(mSmsUri, null, null, null, null);
         mCur.moveToNext();
 
@@ -41,9 +45,9 @@ public class SMSObserver extends ContentObserver {
         if (mPreviousId != mId) {
             mPref.edit().putLong(Constants.PREVIOUS_ID, mId).commit();
 
-            String mContent = mCur.getString(mCur.getColumnIndex("body"));
-            String mNumber = mCur.getString(mCur.getColumnIndex("address"));
-            long mDate = mCur.getLong(mCur.getColumnIndex("date"));
+            String mContent = mCur.getString(mCur.getColumnIndex(Constants.SMS_PROVIDER_COLUMN_BODY));
+            String mNumber = mCur.getString(mCur.getColumnIndex(Constants.SMS_PROVIDER_COLUMN_ADDRESS));
+            long mDate = mCur.getLong(mCur.getColumnIndex(Constants.SMS_PROVIDER_COLUMN_DATE));
 
             if (mNumber != null || mNumber.length() > 0) {
 

@@ -10,7 +10,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
         android:textColor="@color/textColor"
-        android:id="@+id/messages_listview_txtnum" />
+        android:id="@+id/listview_messages_num" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -18,5 +18,5 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
         android:textColor="@color/textColor"
-        android:id="@+id/messages_listview_text" />
+        android:id="@+id/listview_messages_text" />
 </LinearLayout>

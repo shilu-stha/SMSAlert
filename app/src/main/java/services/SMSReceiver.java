@@ -1,7 +1,6 @@
-package common;
+package services;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +8,10 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 
 import com.shilu.leapfrog.smsalert.TextToSpeechService;
+
+import components.Constants;
+import components.ContactLookUp;
+import components.InsertData;
 
 
 /**
@@ -45,7 +48,7 @@ public class SMSReceiver extends BroadcastReceiver {
                         mTimeStamp = mMessage[i].getTimestampMillis();
                         mMsgBody = mMsgBody + mMessage[i].getMessageBody();
                     }
-                    mFullMessage = "SMS Received. \n" + mMsgBody;
+                    mFullMessage = Constants.FULL_MESSAGE_TEXT + mMsgBody;
                   
                     String mDisplayName = "";
                     String mContactId = "";

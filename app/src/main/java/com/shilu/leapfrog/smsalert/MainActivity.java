@@ -28,8 +28,11 @@ import android.widget.Toast;
 import java.util.Locale;
 
 import adapter.MessagesListAdapter;
-import common.Constants;
-import common.SMSObserver;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnItemClick;
+import components.Constants;
+import services.SMSObserver;
 import data.Contract;
 
 /**
@@ -38,30 +41,30 @@ import data.Contract;
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 4/15/15
  */
-public class MainActivity extends ActionBarActivity implements LoaderCallbacks<Cursor>, TextToSpeech.OnInitListener {
+public class MainActivity extends ActionBarActivity implements LoaderCallbacks<Cursor>, TextToSpeech.OnInitListener,ListView.OnItemClickListener {
 
     private String TAG = MainActivity.class.getSimpleName();
     private static TextToSpeech sTextToSpeech;
     private MessagesListAdapter mAdapter;
 
-    private ListView listview;
-    private TextView welcomeMessage;
-    private TextView descriptionText;
-    private Toolbar toolbar;
-    private ProgressBar mProgressBar;
+    @InjectView(R.id.messages_listview)
+    ListView listview;
+    @InjectView(R.id.text_welcome)
+    TextView welcomeMessage;
+    @InjectView(R.id.text_description)
+    TextView descriptionText;
+    @InjectView(R.id.app_bar)
+    Toolbar toolbar;
+    @InjectView(R.id.progress_bar)
+    ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        ButterKnife.inject(this);
         setSupportActionBar(toolbar);
-
-        listview = (ListView) findViewById(R.id.messagesListview);
-        welcomeMessage = (TextView) findViewById(R.id.welcomeText);
-        descriptionText = (TextView) findViewById(R.id.descriptionText);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         mProgressBar.setIndeterminate(true);
         mProgressBar.setVisibility(View.VISIBLE);
@@ -71,26 +74,6 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
         SMSObserver smsObserver = (new SMSObserver(new Handler(), this));
         ContentResolver contentResolver = this.getContentResolver();
         contentResolver.registerContentObserver(Uri.parse(Constants.SMS_CONTENT_PROVIDER_URI), true, smsObserver);
-
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mProgressBar.setVisibility(View.VISIBLE);
-
-                Cursor mCursor = (Cursor) parent.getItemAtPosition(position);
-                String mMessageId = mCursor.getString(mCursor.getColumnIndex(Contract.MessageEntry.CONTACTS_NUMBER));
-                String mContactName = mCursor.getString(mCursor.getColumnIndex(Contract.MessageEntry.CONTACTS_NAME));
-
-                if (TextUtils.isEmpty(mContactName)) {
-                    mContactName = mMessageId;
-                }
-                Intent mIntent = new Intent(getApplicationContext(),DetailMessage.class);
-                mIntent.putExtra(Constants.MESSAGE_ID, mMessageId);
-                mIntent.putExtra(Constants.CONTACT_NAME, mContactName);
-                startActivity(mIntent);
-
-            }
-        });
 
         getSupportLoaderManager().initLoader(1, null, this);
     }
@@ -110,11 +93,14 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
+
         if (sTextToSpeech != null) {
             sTextToSpeech.stop();
             sTextToSpeech.shutdown();
         }
-        super.onDestroy();
+
+        ButterKnife.reset(this);
     }
 
     @Override
@@ -177,11 +163,11 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
 
             if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
 
-                Toast.makeText(getApplicationContext(), "Language is not available.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), Constants.ERROR_MESSAGE_LANGUAGE_UNAVAILABLE, Toast.LENGTH_LONG).show();
                 Intent installIntent = new Intent();
                 installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(installIntent);
-                Log.v(TAG, "Language is not available.");
+                Log.v(TAG, Constants.ERROR_MESSAGE_LANGUAGE_UNAVAILABLE);
             } else {
                 SharedPreferences mPref = getSharedPreferences(Constants.PREFERENCE, Context.MODE_PRIVATE);
                 boolean firstIn = mPref.getBoolean(Constants.FIRST_IN, true);
@@ -199,4 +185,22 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
         }
     }
 
+    @Override
+    @OnItemClick(R.id.messages_listview)
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        mProgressBar.setVisibility(View.VISIBLE);
+
+        Cursor mCursor = (Cursor) parent.getItemAtPosition(position);
+        String mMessageId = mCursor.getString(mCursor.getColumnIndex(Contract.MessageEntry.CONTACTS_NUMBER));
+        String mContactName = mCursor.getString(mCursor.getColumnIndex(Contract.MessageEntry.CONTACTS_NAME));
+
+        if (TextUtils.isEmpty(mContactName)) {
+            mContactName = mMessageId;
+        }
+        Intent mIntent = new Intent(getApplicationContext(),DetailMessage.class);
+        mIntent.putExtra(Constants.MESSAGE_ID, mMessageId);
+        mIntent.putExtra(Constants.CONTACT_NAME, mContactName);
+        startActivity(mIntent);
+
+    }
 }

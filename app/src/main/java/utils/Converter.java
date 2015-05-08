@@ -1,8 +1,10 @@
-package common;
+package utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import components.Constants;
 
 /**
  * Constant file for all the constant values.
@@ -18,7 +20,7 @@ public class Converter {
      * @return : string date formatted as <code><i>E d-MMM-yy</i></code>
      */
     public static String DateConverter(long timeMilliSeconds) {
-        DateFormat mFormat = new SimpleDateFormat(Constants.DATEFORMAT);
+        DateFormat mFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
         Calendar mCal = Calendar.getInstance();
         mCal.setTimeInMillis(timeMilliSeconds);
 
@@ -31,7 +33,7 @@ public class Converter {
      * @return : string time formatted as <code><i>h:mma</i></code>
      */
     public static String TimeConverter(long timeMilliSeconds) {
-        DateFormat mFormat = new SimpleDateFormat(Constants.TIMEFORMAT);
+        DateFormat mFormat = new SimpleDateFormat(Constants.TIME_FORMAT);
         Calendar mCal = Calendar.getInstance();
         mCal.setTimeInMillis(timeMilliSeconds);
 

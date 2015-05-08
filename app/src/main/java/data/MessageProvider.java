@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-import common.Constants;
+import components.Constants;
 
 /**
  * Constant file for all the constant values.
@@ -59,7 +59,7 @@ public class MessageProvider extends ContentProvider {
                 break;
 
             default:
-                throw new UnsupportedOperationException("Unknown Exception " + uri);
+                throw new UnsupportedOperationException(Constants.ERROR_UNKNOWN_EXCEPTION + uri);
         }
         mCursor.setNotificationUri(getContext().getContentResolver(), uri);
         return mCursor;
@@ -83,7 +83,7 @@ public class MessageProvider extends ContentProvider {
                 if (mID > 0) {
                     mReturnUri = Contract.MessageEntry.buildMessageUri(mID);
                 } else {
-                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                    throw new android.database.SQLException(Constants.ERROR_SQL_INSERTION + uri);
                 }
                 break;
 
@@ -92,12 +92,12 @@ public class MessageProvider extends ContentProvider {
                 if (mID > 0) {
                     mReturnUri = Contract.MessageDetailEntry.buildMessageDetailsUri(mID);
                 } else {
-                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                    throw new android.database.SQLException(Constants.ERROR_SQL_INSERTION + uri);
                 }
                 break;
 
             default:
-                throw new UnsupportedOperationException("Unknown Exception " + uri);
+                throw new UnsupportedOperationException(Constants.ERROR_UNKNOWN_EXCEPTION + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
         return mReturnUri;
@@ -122,7 +122,7 @@ public class MessageProvider extends ContentProvider {
                 break;
 
             default:
-                throw new UnsupportedOperationException("Unknown Exception " + uri);
+                throw new UnsupportedOperationException(Constants.ERROR_UNKNOWN_EXCEPTION + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
         return mRowDeleted;
@@ -151,7 +151,7 @@ public class MessageProvider extends ContentProvider {
                 break;
 
             default:
-                throw new UnsupportedOperationException("Unknown Exception " + uri);
+                throw new UnsupportedOperationException(Constants.ERROR_UNKNOWN_EXCEPTION + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
         return mRowsUpdated;

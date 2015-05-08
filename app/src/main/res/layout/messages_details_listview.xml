@@ -10,11 +10,11 @@
         android:text="New Text"
         android:textColor="@color/textColor"
         android:layout_margin="20dp"
-        android:id="@+id/message_date"
+        android:id="@+id/listview_detail_date"
         android:layout_gravity="center" />
 
     <TextView
-        android:id="@+id/message_body"
+        android:id="@+id/listview_detail_body"
         android:text="@string/hello_world"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,10 +25,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Text"
-        android:id="@+id/message_time"
-        android:layout_alignLeft="@+id/message_body"
-        android:layout_alignStart="@+id/message_body"
-        android:layout_below="@+id/message_body"
+        android:id="@+id/listview_detail_time"
+        android:layout_alignLeft="@+id/listview_detail_body"
+        android:layout_alignStart="@+id/listview_detail_body"
+        android:layout_below="@+id/listview_detail_body"
         android:textColor="@color/textColor"
         android:layout_margin="20dp"/>
 

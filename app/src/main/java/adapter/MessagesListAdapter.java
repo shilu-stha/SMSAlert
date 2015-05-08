@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.shilu.leapfrog.smsalert.R;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import data.Contract;
 
 /**
@@ -22,6 +24,10 @@ import data.Contract;
 
 public class MessagesListAdapter extends CursorAdapter {
 
+    @InjectView(R.id.listview_messages_text)
+    TextView txtBody;
+    @InjectView(R.id.listview_messages_num)
+    TextView txtNumber;
 
     public MessagesListAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);
@@ -34,8 +40,7 @@ public class MessagesListAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView txtBody = (TextView) view.findViewById(R.id.messages_listview_text);
-        TextView txtNumber = (TextView) view.findViewById(R.id.messages_listview_txtnum);
+        ButterKnife.inject(this,view);
 
         String mBody = cursor.getString(cursor.getColumnIndexOrThrow(Contract.MessageEntry.MESSAGE_BODY));
         String mName = cursor.getString(cursor.getColumnIndexOrThrow(Contract.MessageEntry.CONTACTS_NAME));

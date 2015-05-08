@@ -12,8 +12,10 @@ import android.widget.TextView;
 
 import com.shilu.leapfrog.smsalert.R;
 
-import common.Constants;
-import common.Converter;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import components.Constants;
+import utils.Converter;
 import data.Contract;
 
 /**
@@ -25,6 +27,12 @@ import data.Contract;
 
 public class MessageDetailsListAdapter extends CursorAdapter {
 
+    @InjectView(R.id.listview_detail_body)
+    TextView txtBody;
+    @InjectView(R.id.listview_detail_date)
+    TextView txtDate;
+    @InjectView(R.id.listview_detail_time)
+    TextView txtTime;
 
     public MessageDetailsListAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);
@@ -37,9 +45,7 @@ public class MessageDetailsListAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView txtBody = (TextView) view.findViewById(R.id.message_body);
-        TextView txtDate = (TextView) view.findViewById(R.id.message_date);
-        TextView txtTime = (TextView) view.findViewById(R.id.message_time);
+        ButterKnife.inject(this,view);
 
         String mBody = cursor.getString(cursor.getColumnIndexOrThrow(Contract.MessageDetailEntry.MESSAGE_BODY));
         String mType = cursor.getString(cursor.getColumnIndexOrThrow(Contract.MessageDetailEntry.MESSAGE_TYPE));

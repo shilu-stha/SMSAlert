@@ -23,7 +23,10 @@ import android.widget.Toast;
 import java.util.Locale;
 
 import adapter.MessageDetailsListAdapter;
-import common.Constants;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnItemClick;
+import components.Constants;
 import data.Contract;
 
 /**
@@ -32,24 +35,26 @@ import data.Contract;
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 4/24/15
  */
-public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnInitListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnInitListener, LoaderManager.LoaderCallbacks<Cursor>, ListView.OnItemClickListener {
 
     private String TAG = DetailMessage.class.getSimpleName();
     private MessageDetailsListAdapter mAdapter;
     private TextToSpeech mTextToSpeech;
     private String mMessageId;
 
-    private Toolbar toolbar;
-    private ListView listview;
-    private ProgressBar mProgressBar;
+    @InjectView(R.id.app_bar)
+    Toolbar toolbar;
+    @InjectView(R.id.detail_listview)
+    ListView listview;
+    @InjectView(R.id.detail_progress_bar)
+    ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_message);
 
-        toolbar = (Toolbar) findViewById(R.id.app_bar);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar2);
+        ButterKnife.inject(this);
 
         mProgressBar.setIndeterminate(true);
         mProgressBar.setVisibility(View.VISIBLE);
@@ -64,16 +69,6 @@ public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnI
         getSupportActionBar().setTitle(mContactName);
 
         mTextToSpeech = new TextToSpeech(DetailMessage.this, this);
-        listview = (ListView) findViewById(R.id.message_detail_listview);
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mProgressBar.setVisibility(View.VISIBLE);
-                Cursor mCursor = (Cursor) parent.getItemAtPosition(position);
-                String mMessage = mCursor.getString(mCursor.getColumnIndex(Contract.MessageEntry.MESSAGE_BODY));
-                speakUp(mMessage);
-            }
-        });
 
         getSupportLoaderManager().initLoader(2, null, this);
 
@@ -95,14 +90,18 @@ public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnI
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         if (mTextToSpeech != null) {
             mTextToSpeech.shutdown();
         }
+
+        ButterKnife.reset(this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_detail_message, menu);
+
         return true;
     }
 
@@ -127,11 +126,11 @@ public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnI
             int mResult = mTextToSpeech.setLanguage(Locale.ENGLISH);
 
             if (mResult == TextToSpeech.LANG_MISSING_DATA || mResult == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Toast.makeText(getApplicationContext(), "Language is not available.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), Constants.ERROR_MESSAGE_LANGUAGE_UNAVAILABLE, Toast.LENGTH_LONG).show();
                 Intent installIntent = new Intent();
                 installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(installIntent);
-                Log.v(TAG, "Language is not available.");
+                Log.v(TAG, Constants.ERROR_MESSAGE_LANGUAGE_UNAVAILABLE);
             }
         }
     }
@@ -162,5 +161,14 @@ public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnI
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.changeCursor(null);
+    }
+
+    @Override
+    @OnItemClick(R.id.detail_listview)
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        mProgressBar.setVisibility(View.VISIBLE);
+        Cursor mCursor = (Cursor) parent.getItemAtPosition(position);
+        String mMessage = mCursor.getString(mCursor.getColumnIndex(Contract.MessageEntry.MESSAGE_BODY));
+        speakUp(mMessage);
     }
 }

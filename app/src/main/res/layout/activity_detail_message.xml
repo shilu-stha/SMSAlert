@@ -11,7 +11,7 @@
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/message_detail_listview"
+        android:id="@+id/detail_listview"
         android:layout_below="@+id/app_bar"
         android:dividerHeight="0dp"
         android:listSelector="@null"/>
@@ -19,7 +19,7 @@
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progressBar2"
+        android:id="@+id/detail_progress_bar"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 

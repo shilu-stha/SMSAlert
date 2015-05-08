@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
-import common.Constants;
+import components.Constants;
 
 /**
  * Constant file for all the constant values.
@@ -80,11 +80,11 @@ public class TextToSpeechService extends Service implements TextToSpeech.OnInitL
 
             if (result == TextToSpeech.LANG_MISSING_DATA ||
                     result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Toast.makeText(getApplicationContext(), "Language is not available.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),Constants.ERROR_MESSAGE_LANGUAGE_UNAVAILABLE, Toast.LENGTH_LONG).show();
                 Intent mInstallIntent = new Intent();
                 mInstallIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(mInstallIntent);
-                Log.v(TAG, "Language is not available.");
+                Log.v(TAG, Constants.ERROR_MESSAGE_LANGUAGE_UNAVAILABLE);
             } else {
                 mTtsReady = true;
                 speakUp();
