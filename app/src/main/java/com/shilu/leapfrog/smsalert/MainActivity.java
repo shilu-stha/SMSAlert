@@ -27,13 +27,13 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
-import adapter.MessagesListAdapter;
+import com.shilu.leapfrog.smsalert.adapter.MessagesListAdapter;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnItemClick;
-import components.Constants;
-import services.SMSObserver;
-import data.Contract;
+import com.shilu.leapfrog.smsalert.components.Constants;
+import com.shilu.leapfrog.smsalert.services.SMSObserver;
+import com.shilu.leapfrog.smsalert.data.Contract;
 
 /**
  * Constant file for all the constant values.

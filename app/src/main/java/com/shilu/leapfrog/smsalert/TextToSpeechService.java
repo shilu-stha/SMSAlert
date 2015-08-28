@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
-import components.Constants;
+import com.shilu.leapfrog.smsalert.components.Constants;
 
 /**
  * Constant file for all the constant values.
