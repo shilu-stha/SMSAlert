@@ -14,7 +14,7 @@ import com.shilu.leapfrog.smsalert.components.InsertData;
 
 
 /**
- * Constant file for all the constant values.
+ *Look up the sent messages from the user
  *
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 4/24/15

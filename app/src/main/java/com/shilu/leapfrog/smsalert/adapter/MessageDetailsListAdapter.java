@@ -19,7 +19,7 @@ import com.shilu.leapfrog.smsalert.utils.Converter;
 import com.shilu.leapfrog.smsalert.data.Contract;
 
 /**
- * Constant file for all the constant values.
+ * Adapter class to list details of the messages
  *
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 5/4/15

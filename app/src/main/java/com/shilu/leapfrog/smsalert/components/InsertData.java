@@ -6,7 +6,7 @@ import android.content.Context;
 import com.shilu.leapfrog.smsalert.data.Contract;
 
 /**
- * Constant file for all the constant values.
+ * Insert sms data to table
  *
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 5/5/15

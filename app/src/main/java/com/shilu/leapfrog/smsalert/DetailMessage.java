@@ -30,7 +30,7 @@ import com.shilu.leapfrog.smsalert.components.Constants;
 import com.shilu.leapfrog.smsalert.data.Contract;
 
 /**
- * Constant file for all the constant values.
+ * Shows detail of the SMS
  *
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 4/24/15

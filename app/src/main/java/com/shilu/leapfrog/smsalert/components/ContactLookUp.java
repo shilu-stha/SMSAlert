@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 
 /**
- * Constant file for all the constant values.
+ * look up for the contact from the phone
  *
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 5/4/15
