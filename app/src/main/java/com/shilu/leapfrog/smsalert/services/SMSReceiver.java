@@ -15,7 +15,7 @@ import com.shilu.leapfrog.smsalert.components.InsertData;
 
 
 /**
- * Constant file for all the constant values.
+ * Listens for the SMS arrival and broadcasts the message
  *
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 4/15/15

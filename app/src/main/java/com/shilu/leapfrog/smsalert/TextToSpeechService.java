@@ -14,7 +14,7 @@ import java.util.Locale;
 import com.shilu.leapfrog.smsalert.components.Constants;
 
 /**
- * Constant file for all the constant values.
+ * Service to convert text to speech
  *
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 4/16/15

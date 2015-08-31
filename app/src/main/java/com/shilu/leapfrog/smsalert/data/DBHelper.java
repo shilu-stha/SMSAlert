@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.shilu.leapfrog.smsalert.data.Contract.MessageEntry;
 
 /**
- * Constant file for all the constant values.
+ * creates the database and database table.
  *
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 4/20/15

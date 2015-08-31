@@ -8,7 +8,7 @@ import com.shilu.leapfrog.smsalert.components.Constants;
 
 
 /**
- * Constant file for all the constant values.
+ * Constant for table and table column
  *
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 4/21/15

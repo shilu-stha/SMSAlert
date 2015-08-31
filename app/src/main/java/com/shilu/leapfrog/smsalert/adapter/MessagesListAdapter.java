@@ -16,7 +16,7 @@ import butterknife.InjectView;
 import com.shilu.leapfrog.smsalert.data.Contract;
 
 /**
- * Constant file for all the constant values.
+ * Adapter to list the messages
  *
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 4/22/15

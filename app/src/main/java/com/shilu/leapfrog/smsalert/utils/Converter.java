@@ -7,7 +7,7 @@ import java.util.Calendar;
 import com.shilu.leapfrog.smsalert.components.Constants;
 
 /**
- * Constant file for all the constant values.
+ *Utility to convert date
  *
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 5/5/15
