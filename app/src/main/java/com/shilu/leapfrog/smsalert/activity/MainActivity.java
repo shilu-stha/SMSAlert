@@ -1,4 +1,4 @@
-package com.shilu.leapfrog.smsalert;
+package com.shilu.leapfrog.smsalert.activity;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
+import com.shilu.leapfrog.smsalert.R;
 import com.shilu.leapfrog.smsalert.adapter.MessagesListAdapter;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -197,7 +198,7 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
         if (TextUtils.isEmpty(mContactName)) {
             mContactName = mMessageId;
         }
-        Intent mIntent = new Intent(getApplicationContext(),DetailMessage.class);
+        Intent mIntent = new Intent(getApplicationContext(),DetailMessageActivity.class);
         mIntent.putExtra(Constants.MESSAGE_ID, mMessageId);
         mIntent.putExtra(Constants.CONTACT_NAME, mContactName);
         startActivity(mIntent);

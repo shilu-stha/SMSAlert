@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
-import com.shilu.leapfrog.smsalert.TextToSpeechService;
-
 import com.shilu.leapfrog.smsalert.components.Constants;
 import com.shilu.leapfrog.smsalert.components.ContactLookUp;
 import com.shilu.leapfrog.smsalert.components.InsertData;

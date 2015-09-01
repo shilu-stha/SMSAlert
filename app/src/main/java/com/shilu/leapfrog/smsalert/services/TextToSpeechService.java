@@ -1,4 +1,4 @@
-package com.shilu.leapfrog.smsalert;
+package com.shilu.leapfrog.smsalert.services;
 
 import android.app.Service;
 import android.content.Context;

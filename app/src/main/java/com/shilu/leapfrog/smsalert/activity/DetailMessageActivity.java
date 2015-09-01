@@ -1,4 +1,4 @@
-package com.shilu.leapfrog.smsalert;
+package com.shilu.leapfrog.smsalert.activity;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
+import com.shilu.leapfrog.smsalert.R;
 import com.shilu.leapfrog.smsalert.adapter.MessageDetailsListAdapter;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -35,9 +36,9 @@ import com.shilu.leapfrog.smsalert.data.Contract;
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 4/24/15
  */
-public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnInitListener, LoaderManager.LoaderCallbacks<Cursor>, ListView.OnItemClickListener {
+public class DetailMessageActivity extends ActionBarActivity implements TextToSpeech.OnInitListener, LoaderManager.LoaderCallbacks<Cursor>, ListView.OnItemClickListener {
 
-    private String TAG = DetailMessage.class.getSimpleName();
+    private String TAG = DetailMessageActivity.class.getSimpleName();
     private MessageDetailsListAdapter mAdapter;
     private TextToSpeech mTextToSpeech;
     private String mMessageId;
@@ -68,7 +69,7 @@ public class DetailMessage extends ActionBarActivity implements TextToSpeech.OnI
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setTitle(mContactName);
 
-        mTextToSpeech = new TextToSpeech(DetailMessage.this, this);
+        mTextToSpeech = new TextToSpeech(DetailMessageActivity.this, this);
 
         getSupportLoaderManager().initLoader(2, null, this);
 
