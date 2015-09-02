@@ -24,6 +24,7 @@ import java.util.Locale;
 
 import com.shilu.leapfrog.smsalert.R;
 import com.shilu.leapfrog.smsalert.adapter.MessageDetailsListAdapter;
+import adapter.MessageDetailRecyclerAdapter;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnItemClick;
@@ -152,6 +153,10 @@ public class DetailMessageActivity extends ActionBarActivity implements TextToSp
         if (data != null) {
             mAdapter = new MessageDetailsListAdapter(getApplicationContext(), data, false);
             listview.setAdapter(mAdapter);
+//            mList = updateMessageDetailsList(data);
+//            mAdapter = new MessageDetailRecyclerAdapter(mList);
+////            mAdapter.setClickListener(this);
+////            recyclerView.setAdapter(mAdapter);
         }
 
         mAdapter.changeCursor(data);
