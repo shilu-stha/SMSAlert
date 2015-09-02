@@ -13,28 +13,32 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shilu.leapfrog.smsalert.R;
+import com.shilu.leapfrog.smsalert.components.ClickListener;
+import com.shilu.leapfrog.smsalert.components.Constants;
+import com.shilu.leapfrog.smsalert.components.Messages;
+import com.shilu.leapfrog.smsalert.data.Contract;
+import com.shilu.leapfrog.smsalert.services.SMSObserver;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
-import com.shilu.leapfrog.smsalert.R;
-import com.shilu.leapfrog.smsalert.adapter.MessagesListAdapter;
+import adapter.MessagesRecyclerAdapter;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnItemClick;
-import com.shilu.leapfrog.smsalert.components.Constants;
-import com.shilu.leapfrog.smsalert.services.SMSObserver;
-import com.shilu.leapfrog.smsalert.data.Contract;
 
 /**
  * Constant file for all the constant values.
@@ -42,14 +46,13 @@ import com.shilu.leapfrog.smsalert.data.Contract;
  * @author: Shilu Shrestha, shilushrestha@lftechnology.com
  * @date: 4/15/15
  */
-public class MainActivity extends ActionBarActivity implements LoaderCallbacks<Cursor>, TextToSpeech.OnInitListener,ListView.OnItemClickListener {
-
+public class MainActivity extends ActionBarActivity implements LoaderCallbacks<Cursor>, TextToSpeech.OnInitListener, ClickListener {
     private String TAG = MainActivity.class.getSimpleName();
     private static TextToSpeech sTextToSpeech;
-    private MessagesListAdapter mAdapter;
+    private MessagesRecyclerAdapter mAdapter;
 
-    @InjectView(R.id.messages_listview)
-    ListView listview;
+    @InjectView(R.id.recycler_view)
+    RecyclerView recyclerView;
     @InjectView(R.id.text_welcome)
     TextView welcomeMessage;
     @InjectView(R.id.text_description)
@@ -58,6 +61,7 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
     Toolbar toolbar;
     @InjectView(R.id.progress_bar)
     ProgressBar mProgressBar;
+    private List<Messages> mMessageEntryList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,11 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
 
         mProgressBar.setIndeterminate(true);
         mProgressBar.setVisibility(View.VISIBLE);
+
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setHasFixedSize(true);
 
         sTextToSpeech = new TextToSpeech(MainActivity.this, this);
 
@@ -137,23 +146,25 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data == null) {
-            listview.setVisibility(View.INVISIBLE);
-        } else {
+        if (data != null) {
             descriptionText.setVisibility(View.INVISIBLE);
             welcomeMessage.setVisibility(View.INVISIBLE);
-            listview.setVisibility(View.VISIBLE);
-            mAdapter = new MessagesListAdapter(getApplicationContext(), data, false);
-            listview.setAdapter(mAdapter);
+
+            mMessageEntryList = updateMessagesList(data);
+
+            mAdapter = new MessagesRecyclerAdapter(mMessageEntryList);
+            mAdapter.setClickListener(this);
+
+            recyclerView.setAdapter(mAdapter);
         }
-        mAdapter.changeCursor(data);
+        mAdapter.notifyDataSetChanged();
 
         mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mAdapter.changeCursor(null);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -175,7 +186,6 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
 
 //              for welcome speech message
                 if (firstIn) {
-                    listview.setVisibility(View.INVISIBLE);
                     descriptionText.setVisibility(View.VISIBLE);
                     welcomeMessage.setVisibility(View.VISIBLE);
 
@@ -187,13 +197,13 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
     }
 
     @Override
-    @OnItemClick(R.id.messages_listview)
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void itemClicked(View view, int position) {
         mProgressBar.setVisibility(View.VISIBLE);
 
-        Cursor mCursor = (Cursor) parent.getItemAtPosition(position);
-        String mMessageId = mCursor.getString(mCursor.getColumnIndex(Contract.MessageEntry.CONTACTS_NUMBER));
-        String mContactName = mCursor.getString(mCursor.getColumnIndex(Contract.MessageEntry.CONTACTS_NAME));
+        Messages mMessages = mMessageEntryList.get(position);
+
+        String mMessageId = mMessages.CONTACTS_NUMBER;
+        String mContactName = mMessages.CONTACTS_NAME;
 
         if (TextUtils.isEmpty(mContactName)) {
             mContactName = mMessageId;
@@ -202,6 +212,25 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
         mIntent.putExtra(Constants.MESSAGE_ID, mMessageId);
         mIntent.putExtra(Constants.CONTACT_NAME, mContactName);
         startActivity(mIntent);
+    }
 
+    List<Messages> updateMessagesList(Cursor cursor) {
+        List<Messages> mList = new ArrayList<Messages>();
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            Messages messageEntry = new Messages();
+
+            messageEntry.MESSAGE_BODY = cursor.getString(cursor.getColumnIndex(Contract.MessageEntry.MESSAGE_BODY));
+            messageEntry.CONTACTS_NUMBER = cursor.getString(cursor.getColumnIndex(Contract.MessageEntry.CONTACTS_NUMBER));
+            messageEntry.CONTACTS_NAME = cursor.getString(cursor.getColumnIndex(Contract.MessageEntry.CONTACTS_NAME));
+            messageEntry.CONTACTS_ID = cursor.getString(cursor.getColumnIndex(Contract.MessageEntry.CONTACTS_ID));
+            messageEntry.DATE_TIME = cursor.getString(cursor.getColumnIndex(Contract.MessageEntry.DATE_TIME));
+
+            mList.add(messageEntry);
+            cursor.moveToNext();
+        }
+
+        return mList;
     }
 }

@@ -20,16 +20,16 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import java.util.Locale;
-
 import com.shilu.leapfrog.smsalert.R;
 import com.shilu.leapfrog.smsalert.adapter.MessageDetailsListAdapter;
-import adapter.MessageDetailRecyclerAdapter;
+import com.shilu.leapfrog.smsalert.components.Constants;
+import com.shilu.leapfrog.smsalert.data.Contract;
+
+import java.util.Locale;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnItemClick;
-import com.shilu.leapfrog.smsalert.components.Constants;
-import com.shilu.leapfrog.smsalert.data.Contract;
 
 /**
  * Shows detail of the SMS
